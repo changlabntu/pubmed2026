@@ -1,0 +1,1 @@
+(knee) AND (MRI OR "magnetic resonance imaging") AND ("deep learning" OR "artificial intelligence" OR "machine learning" OR radiomics) AND (pain OR symptom*)

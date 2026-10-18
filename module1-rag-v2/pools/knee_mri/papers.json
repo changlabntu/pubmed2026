@@ -1,0 +1,7 @@
+{
+ "question": "Can AI detect or predict pain symptoms from knee MRI images?",
+ "anchor": "32055951",
+ "companions": ["40885690", "33337584"],
+ "companion_seed": 42,
+ "note": "anchor = Chang 2020, convolutional Siamese network assessing knee pain from MR, AUC 0.808. companions = random.Random(42).sample(pool minus anchor, 2)"
+}

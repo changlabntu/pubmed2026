@@ -1,0 +1,1 @@
+"lung cancer" AND ("deep learning" OR "artificial intelligence") AND ("low-dose CT" OR "low-dose computed tomography") AND screening

@@ -1,0 +1,347 @@
+{
+ "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+ "model": "claude-sonnet-5-5",
+ "steps": [
+  {
+   "step": "1. embedding search, raw question, k=15",
+   "top": [
+    "38355174",
+    "41308576",
+    "35406501",
+    "33240975",
+    "42340186",
+    "41319449",
+    "40213646",
+    "33658025",
+    "42668303",
+    "39165498",
+    "35123156",
+    "35311112",
+    "41749798",
+    "36672655",
+    "39754864"
+   ],
+   "anchor_rank": 2
+  },
+  {
+   "step": "2. query rewrite (Haiku) then embedding search, k=15",
+   "hypothetical_abstract": "This prospective, multicenter cohort study will enroll 12,000 adults aged 50-80 with at least 20 pack-years of smoking who are undergoing annual low-dose CT lung cancer screening at six academic and community screening programs. Each baseline and follow-up scan will be read independently by board-certified radiologists using Lung-RADS v2022 and by a locked, pre-specified deep learning system that outputs nodule detection and per-patient malignancy risk, with radiologists blinded to AI output, and ground truth will be established by histopathology or at least 24 months of follow-up. Primary metrics will be AUC, sensitivity, specificity, and positive predictive value for screen-detected cancer at 1 and 2 years, with secondary outcomes comparing false-positive and recall rates, interval cancer detection, reader time, and performance across sex, race, and scanner vendor subgroups using 95% bootstr",
+   "top": [
+    "38355174",
+    "33482120",
+    "34264825",
+    "42340186",
+    "32864596",
+    "36672655",
+    "33895622",
+    "36600392",
+    "31110349",
+    "40213646",
+    "36909593",
+    "35123156",
+    "40956165",
+    "37526548",
+    "41308576"
+   ],
+   "anchor_rank": 15
+  },
+  {
+   "step": "3. keyword search (minsearch TF-IDF), k=15",
+   "top": [
+    "33240975",
+    "39165498",
+    "40213646",
+    "34871936",
+    "31558626",
+    "40001094",
+    "41308576",
+    "36634294",
+    "37489991",
+    "31675322",
+    "42608820",
+    "31747155",
+    "41872344",
+    "39278738",
+    "39709114"
+   ],
+   "anchor_rank": 7
+  },
+  {
+   "step": "4. union of candidates",
+   "candidates": [
+    "38355174",
+    "41308576",
+    "35406501",
+    "33240975",
+    "42340186",
+    "41319449",
+    "40213646",
+    "33658025",
+    "42668303",
+    "39165498",
+    "35123156",
+    "35311112",
+    "41749798",
+    "36672655",
+    "39754864",
+    "33482120",
+    "34264825",
+    "32864596",
+    "33895622",
+    "36600392",
+    "31110349",
+    "36909593",
+    "40956165",
+    "37526548",
+    "34871936",
+    "31558626",
+    "40001094",
+    "36634294",
+    "37489991",
+    "31675322",
+    "42608820",
+    "31747155",
+    "41872344",
+    "39278738",
+    "39709114"
+   ],
+   "count": 35
+  },
+  {
+   "step": "5. grade candidates with Haiku, batches of 10",
+   "graded": 35,
+   "HIGH": [
+    "41308576",
+    "42340186",
+    "41319449",
+    "40213646",
+    "42668303",
+    "35123156",
+    "39754864",
+    "32864596",
+    "33895622",
+    "31110349",
+    "40956165",
+    "37526548",
+    "34871936",
+    "36634294",
+    "41872344"
+   ],
+   "MEDIUM": [
+    "38355174",
+    "33240975",
+    "33658025",
+    "39165498",
+    "35311112",
+    "36672655",
+    "33482120",
+    "34264825",
+    "36600392",
+    "36909593",
+    "40001094",
+    "37489991",
+    "31747155",
+    "39278738"
+   ],
+   "LOW": [
+    "35406501",
+    "41749798",
+    "31558626",
+    "31675322",
+    "42608820",
+    "39709114"
+   ]
+  },
+  {
+   "step": "6. synthesize from HIGH papers only",
+   "papers": [
+    "41308576",
+    "42340186",
+    "41319449",
+    "40213646",
+    "42668303",
+    "35123156",
+    "39754864",
+    "32864596",
+    "33895622",
+    "31110349",
+    "40956165",
+    "37526548",
+    "34871936",
+    "36634294",
+    "41872344"
+   ],
+   "input_tokens": 12430,
+   "output_tokens": 1494
+  },
+  {
+   "step": "7. verify citations",
+   "cited": [
+    "31110349",
+    "32864596",
+    "33895622",
+    "34871936",
+    "35123156",
+    "36634294",
+    "37526548",
+    "39754864",
+    "40213646",
+    "40956165",
+    "41308576",
+    "41319449",
+    "41872344",
+    "42340186",
+    "42668303"
+   ],
+   "not_in_context": []
+  }
+ ],
+ "review": "**1) Validated studies (cohort, size, task, result)**\n\n- Ledda et al., BioMILD: 4104 baseline LDCTs; AI as first reader (LungRADS). AI sensitivity was 91.2% vs 89.7% for the human reader, specificity 75.7% vs 90.0%, NPV 99.8% for both, and expected workload reduction was 74.7% [PMID 41308576].\n- Walstra et al., 4-IN-THE-LUNG-RUN: 3678 baseline LDCTs; AI first reader. AI produced 31 negative-misclassifications vs 407 for radiologists, and 3/102 missed referrals vs 12/102 [PMID 39754864].\n- Lancaster et al., Moscow screening: 283 participants; standalone AI nodule volumetry. AI had 8 negative-misclassifications; workload reduction of up to 86.7% was suggested [PMID 35123156].\n- Jiang et al., UKLS: 710 participants, 939 follow-up scans; volume doubling time. AI had a 9.1% 3-month negative misclassification rate vs 18.2-63.6% for humans [PMID 41319449]. Separately, nodule matching succeeded in 83.5% (283/339) of persisting nodules [PMID 42668303]. A further UKLS analysis of 1250 scans found only 1.9% of participants had extra workload from perifissural nodules [PMID 41872344].\n- Antonissen et al.: 4146 participants from three European trials; malignancy risk. AUC 0.94 vs 0.93 for PanCan overall, and 0.90 vs 0.86 for indeterminate nodules [PMID 40956165].\n- Peeters et al., LUNA25: 468 nodules (463 scans) from three European trials; AI AUC 0.78 vs 0.70 for 65 radiologists [PMID 42340186].\n- Cui et al., Chinese program: 360 individuals; detection. DL-CAD sensitivity was 90.1% vs 76.0% for double reading, at 1.0 false positives per scan [PMID 34871936].\n- Ji et al., West China Hospital: 259,121 non-high-risk participants; AI with thin-section LDCT. Detection rate was 0.3% vs 0.2%, and 5-year survival 95.4% vs 81.3% [PMID 40213646].\n- Mikhael et al. (Sybil): NLST, MGH (8821 LDCTs), and CGMH (12,280 LDCTs); risk prediction. 1-year AUC 0.86-0.94 [PMID 36634294].\n- Huang et al.: 2294 PanCan participants; follow-up risk. 1-year AUC 0.968 [PMID 32864596].\n- Ardila et al.: 6716 NLST cases and 1139 independent cases; AUC 94.4%, outperforming six radiologists when no prior CT was available [PMID 31110349].\n- Trajanovski et al. (NLST, LHMC, Kaggle) reported AUC 86-94% [PMID 33895622]; Venkadesh et al. reported AUC 0.91 and 0.94 on DLCST and MILD subsets [PMID 37526548].\n\n**2) Recurring patterns**\n\n- Cohorts recur: NLST for training, and European trials (DLCST, MILD, NELSON-related, UKLS) for testing [PMID 37526548; 40956165; 42340186].\n- Tasks fall into three groups: AI as first reader/triage [PMID 41308576; 39754864; 35123156], nodule malignancy risk [PMID 40956165; 37526548], and growth or tracking [PMID 41319449; 42668303].\n- Most designs compare AI with radiologists or the PanCan model, and most are retrospective.\n\n**3) Gaps**\n\n- No study in the context was a prospective trial of AI-assisted screening with mortality as an outcome. Ji et al. is the only one reporting survival, and it was a retrospective cohort [PMID 40213646].\n- AI-first-reader work reports workload reductions as estimates, not as measured changes in real practice [PMID 41308576; 35123156].\n- Cancer numbers are small in several validations (for example, 9 cancers in UKLS) [PMID 41319449].\n- Cost-effectiveness and effects on patient outcomes were not assessed.\n- Specificity was lower for AI in BioMILD [PMID 41308576].",
+ "grades": {
+  "38355174": {
+   "grade": "MEDIUM",
+   "why": "This is an RCT protocol for AI in a real screening setting, but it reports no performance results."
+  },
+  "41308576": {
+   "grade": "HIGH",
+   "why": "It evaluates AI software on 4104 baseline LDCTs from the BioMILD screening trial and reports sensitivity, specificity, PPV and NPV."
+  },
+  "35406501": {
+   "grade": "LOW",
+   "why": "It is a cost-effectiveness Markov model built from literature inputs, with no AI evaluation on screening scans."
+  },
+  "33240975": {
+   "grade": "MEDIUM",
+   "why": "It develops and retrospectively evaluates an AI system on LDCT datasets, but not within a defined screening program cohort."
+  },
+  "42340186": {
+   "grade": "HIGH",
+   "why": "AI was externally tested on baseline scans from three European screening trials and compared with radiologists, with AUC results."
+  },
+  "41319449": {
+   "grade": "HIGH",
+   "why": "It validates AI volume doubling time assessment on follow-up scans from the UKLS screening trial against expert consensus and histology."
+  },
+  "40213646": {
+   "grade": "HIGH",
+   "why": "It is a large real-world screening cohort of 259,121 participants comparing AI-assisted LDCT with traditional LDCT on detection rate and survival."
+  },
+  "33658025": {
+   "grade": "MEDIUM",
+   "why": "It evaluates AI on LDCT scans from a small retrospective cohort of 117 screening patients, which is not a formal screening program."
+  },
+  "42668303": {
+   "grade": "HIGH",
+   "why": "It evaluates AI nodule matching in UKLS trial participants and reports the matching success rate."
+  },
+  "39165498": {
+   "grade": "MEDIUM",
+   "why": "It is a prospective case-control study with an AI nodule model combined with liquid biopsy, not a screening cohort evaluation of AI."
+  },
+  "35123156": {
+   "grade": "HIGH",
+   "why": "AI evaluated as standalone reader on baseline ultra-LDCT scans from the Moscow Lung Cancer Screening program, compared with radiologists."
+  },
+  "35311112": {
+   "grade": "MEDIUM",
+   "why": "Prospective study validating an AI plus liquid biopsy classifier on nodule patients, but not a screening-program cohort per se."
+  },
+  "41749798": {
+   "grade": "LOW",
+   "why": "AI used to design educational modules, not a validated imaging AI."
+  },
+  "36672655": {
+   "grade": "MEDIUM",
+   "why": "Clinical trial of AI-assisted nodule detection with sensitivity results, but a small 200-person hospital setting rather than a screening program."
+  },
+  "39754864": {
+   "grade": "HIGH",
+   "why": "AI first-reader evaluated on 3678 baseline LDCTs from the 4-IN-THE-LUNG-RUN screening trial with performance results."
+  },
+  "33482120": {
+   "grade": "MEDIUM",
+   "why": "Secondary analysis of AI risk score on baseline screening CTs (192 studies, weighted), partially a screening cohort but mostly a modeling and cost analysis."
+  },
+  "34264825": {
+   "grade": "MEDIUM",
+   "why": "Challenge evaluating algorithms on 100 NLST subjects; screening trial data but small and a challenge format."
+  },
+  "32864596": {
+   "grade": "HIGH",
+   "why": "Deep learning model validated externally on PanCan screening cohort with AUC results, developed on NLST."
+  },
+  "33895622": {
+   "grade": "HIGH",
+   "why": "Deep learning risk model trained on NLST and externally validated on LHMC and other screening datasets with AUCs."
+  },
+  "36600392": {
+   "grade": "MEDIUM",
+   "why": "Protocol for a screening cohort evaluating AI as reader, but no results yet."
+  },
+  "31110349": {
+   "grade": "HIGH",
+   "why": "Deep learning model validated on NLST screening trial cases plus an independent clinical set, with reader studies and AUC results."
+  },
+  "36909593": {
+   "grade": "MEDIUM",
+   "why": "Model developed and tested on an NLST subset with AUC, but internal data only and no independent validation."
+  },
+  "40956165": {
+   "grade": "HIGH",
+   "why": "External test of a DL malignancy risk algorithm on pooled European screening trial data (DLCST, MILD, NELSON) with AUC results."
+  },
+  "37526548": {
+   "grade": "HIGH",
+   "why": "DL algorithm trained on NLST and externally validated on DLCST and MILD screening trial cohorts with AUC results."
+  },
+  "34871936": {
+   "grade": "HIGH",
+   "why": "DL-CAD evaluated on scans from a real Chinese LDCT screening program, with sensitivity and false-positive rates."
+  },
+  "31558626": {
+   "grade": "LOW",
+   "why": "Cardiovascular risk assessment in a screening cohort, with no AI system."
+  },
+  "40001094": {
+   "grade": "MEDIUM",
+   "why": "AI-assisted mobile LDCT screening program with detection rates and costs, but no standalone AI performance validation."
+  },
+  "36634294": {
+   "grade": "HIGH",
+   "why": "Sybil validated on held-out NLST data and on external MGH and CGMH cohorts, with AUC and C-index results."
+  },
+  "37489991": {
+   "grade": "MEDIUM",
+   "why": "AI body composition tool applied to NLST scans for risk prediction, not lung cancer detection."
+  },
+  "31675322": {
+   "grade": "LOW",
+   "why": "Evaluated on public challenge datasets (LUNA16, Kaggle), not an actual screening program or trial."
+  },
+  "42608820": {
+   "grade": "LOW",
+   "why": "Narrative review of cardiovascular screening within LCS; no AI system validated on a screening cohort."
+  },
+  "31747155": {
+   "grade": "MEDIUM",
+   "why": "Describes the Moscow screening program and states AI was used for quality control, but the abstract gives no performance results."
+  },
+  "41872344": {
+   "grade": "HIGH",
+   "why": "Commercial AI nodule detection was evaluated on 1,250 baseline LDCT scans from the UKLS trial, with workload results reported."
+  },
+  "39278738": {
+   "grade": "MEDIUM",
+   "why": "Fully automated AI body composition software was applied to a real LCS population (938 volunteers), but the study examines associations rather than validating AI performance for cancer screening."
+  },
+  "39709114": {
+   "grade": "LOW",
+   "why": "Evaluates eligibility criteria in the Yorkshire Lung Screening Trial; no AI system is involved."
+  }
+ },
+ "tokens": {
+  "in": 40571,
+  "out": 3721,
+  "usd": 0.17752800000000002
+ }
+}
