@@ -1,0 +1,6 @@
+anthropic>=1.13
+minsearch>=0.2
+sqlitesearch>=0.3
+requests
+python-dotenv
+jupyter

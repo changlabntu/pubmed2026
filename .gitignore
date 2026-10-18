@@ -1,0 +1,8 @@
+# reference clone of the upstream course, not part of this repo
+llm-zoomcamp/
+
+.venv/
+.env
+*.db
+.ipynb_checkpoints/
+__pycache__/
