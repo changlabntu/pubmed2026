@@ -32,7 +32,7 @@ panel instead of `.env`.
 | Step | Button | What happens | Report |
 |---|---|---|---|
 | Q1 | Build corpus | Fetch the frozen PMIDs, keep records with an abstract, embed title plus abstract. Cached in `pools/`. | document count |
-| Q2 | Grade | Haiku grades the anchor paper and two random companions HIGH / MEDIUM / LOW, with an evidence quote each. | which PMID is HIGH |
+| Q2 | Grade | A text box holds the pool's research question (editable). Haiku grades the anchor paper and two random companions HIGH / MEDIUM / LOW against it, with an evidence quote each. Q3 to Q5 use the same text; editing it clears their results. | which PMID is HIGH |
 | Q3 | Find similar | Cosine similarity from the anchor to every paper. The two nearest replace the random pair and are graded. | did the neighbours grade higher |
 | Q4 | Search | Embed the question itself, take its ten nearest, grade all ten. | HIGH count, anchor rank |
 | Q5 | Summarize and verify | Haiku writes a short review from the HIGH and MEDIUM papers, then every cited sentence is checked against its abstract. | claims checked, claims supported |

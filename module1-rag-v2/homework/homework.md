@@ -15,6 +15,8 @@ Number of documents with an abstract: ______
 
 Pool: ______
 
+Research question used (copy the text box; keep the default unless told otherwise): ______
+
 | PMID | Role | Grade | Evidence quote found in abstract? |
 |---|---|---|---|
 | | anchor | | |

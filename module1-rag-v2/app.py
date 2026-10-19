@@ -41,9 +41,7 @@ if ss.get("active_pool") != POOL:
     ss.active_pool = POOL
 
 PAPERS = L.load_papers(POOL)
-QUESTION = PAPERS["question"]
 ANCHOR = PAPERS["anchor"]
-st.markdown(f"**Question:** {QUESTION}")
 
 
 def client():
@@ -131,9 +129,17 @@ st.header("Q2. Grade three fixed papers")
 st.markdown(
     "One **anchor** paper chosen by the instructor and two **companions** picked "
     "at random (seed 42). Haiku grades each one HIGH, MEDIUM, or LOW for how well "
-    "it answers the question, and must quote the sentence that justifies the grade. "
-    "No search yet."
+    "it answers the research question below, and must quote the sentence that justifies "
+    "the grade. Edit the question and grade again to see how the grades move. No search yet."
 )
+# The research question. The pool ships a default; edit it and every grade,
+# search, and review below uses the edited text. Changing it clears Q2 to Q5.
+QUESTION = st.text_input("Research question", value=PAPERS["question"], key=f"question_{POOL}").strip() or PAPERS["question"]
+if ss.get("active_question") != QUESTION:
+    for k in ("q2", "q3", "q3_nn", "q4", "q4_hits", "q5_review", "q5_rows"):
+        ss.pop(k, None)
+    ss.active_question = QUESTION
+
 fixed = [by[ANCHOR]] + [by[p] for p in PAPERS["companions"]]
 for d, tag in zip(fixed, ["anchor", "companion", "companion"]):
     st.markdown(paper_line(d, tag=tag))
