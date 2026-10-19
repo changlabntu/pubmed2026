@@ -16,7 +16,6 @@ import xml.etree.ElementTree as ET
 
 import requests
 from dotenv import load_dotenv
-from minsearch import Index
 
 load_dotenv()
 
@@ -170,7 +169,12 @@ def load_corpus(pmids):
 
 
 def build_index(documents):
-    """minsearch index: title and abstract are searched, the rest is for filtering."""
+    """minsearch index: title and abstract are searched, the rest is for filtering.
+
+    Only review_pipeline.py uses this; the app does not. Imported lazily so the
+    Streamlit deploy does not need minsearch (and its scikit-learn dependency)."""
+    from minsearch import Index
+
     index = Index(
         text_fields=["title", "abstract"],
         keyword_fields=["pmid", "journal"],

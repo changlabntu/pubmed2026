@@ -65,7 +65,7 @@ meta-analyses are excluded from every pool automatically.
 | `pools/<name>/embeddings.npy` | vectors, text-embedding-3-small |
 | `pools/<name>/papers.json` | question, anchor, companions |
 | `homework/homework.md` | what students report |
-| `review_pipeline.py`, `REVIEW-TEMPLATE.md` | a scripted top-k review of the lung pool and its trace, instructor reference |
+| `review_pipeline.py`, `REVIEW-TEMPLATE.md` | a scripted top-k review of the lung pool and its trace, instructor reference (needs `pip install minsearch`) |
 | `fable_literature_pipeline.md`, `reference/independent_review.md` | an agent's full-corpus review of the lung pool and its trace, instructor reference |
 
 ## The pools
