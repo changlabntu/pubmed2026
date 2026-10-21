@@ -302,25 +302,26 @@ def paper_map(docs, V, pool_id, fixed=()):
         x=alt.X("x", axis=None), y=alt.Y("y", axis=None),
         color=alt.Color("Year:Q", scale=alt.Scale(scheme="viridis")),
         tooltip=["PMID", "Paper", "Title", "Citations"],
-        href="url:N",
     )
     if have_cites:
         enc["size"] = alt.Size("size:Q", scale=alt.Scale(domain=[0, CITE_CAP], range=[25, 500]), legend=None)
-    chart = alt.Chart(df).mark_circle(opacity=0.75).encode(**enc)
+    pick = alt.selection_point(name="pick", fields=["PMID"], on="click", empty=False)
+    chart = alt.Chart(df).mark_circle(opacity=0.75).encode(**enc).add_params(pick)
     red = df[df["PMID"].isin(fixed)]
     if len(red):
         dots = alt.Chart(red).mark_circle(color="red", stroke="black", strokeWidth=1.5, opacity=1).encode(
-            x="x", y="y", tooltip=["PMID", "Paper", "Title", "Citations"], href="url:N",
+            x="x", y="y", tooltip=["PMID", "Paper", "Title", "Citations"],
             **({"size": enc["size"]} if "size" in enc else {}))
         labels = alt.Chart(red).mark_text(dy=-14, color="red", fontWeight="bold").encode(
             x="x", y="y", text="Paper")
         chart = chart + dots + labels
-    chart = chart.properties(
-        height=420,
-        usermeta={"embedOptions": {"loader": {"target": "_blank"}}},   # open links in a new tab
-    ).interactive()
-    st.altair_chart(chart, use_container_width=True)
-    st.caption("Click a dot to open the paper on PubMed." + (" Red: your anchor and companions." if len(red) else ""))
+    event = st.altair_chart(chart.properties(height=420).interactive(), use_container_width=True,
+                            on_select="rerun", selection_mode="pick", key=f"map_{pool_id}")
+    picked = [p["PMID"] for p in event.selection.get("pick", [])] if event else []
+    if picked:
+        row = df[df["PMID"] == picked[-1]].iloc[0]
+        st.link_button(f"Open {row['Paper']} on PubMed: {row['Title'][:80]}", row["url"])
+    st.caption("Click a dot, then the link." + (" Red: your anchor and companions." if len(red) else ""))
     if have_cites:
         top = df.loc[df["size"].idxmax()]
         n_counted = sum(c is not None for c in cites)
