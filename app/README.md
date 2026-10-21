@@ -33,14 +33,14 @@ keys in the app's Secrets panel instead of `.env`.
 
 | Step | What the student controls | What happens | Report |
 |---|---|---|---|
-| Q1 Build corpus | shipped pool, or own PubMed query + max records + review exclusion | fetch abstracts, embed title + abstract, cache under `pools/` | document count |
+| Q1 Build corpus | own PubMed query + max records (default), or a shipped pool; reviews and editorials always excluded | fetch abstracts, embed title + abstract, cache under `pools/` | document count |
 | Q2 Grade | research question, anchor paper, **grading prompt** (full text) | the model grades anchor + two seed-42 companions; the table shows whatever keys the prompt asks for | highest-graded PMID and why |
 | Q3 Find similar | k, embed title+abstract or title only | cosine from the anchor; two nearest replace the companions and are graded | did the neighbours grade higher |
 | Q4 Search | embedding / keyword (BM25) / hybrid (rank fusion), rewrite toggle, k | the question retrieves; every hit is graded | HIGH count, anchor rank |
 | Q5 Summarize and verify | grades to include, full-abstract toggle, **synthesis prompt**, **verifier prompt** | the model writes a cited review; each cited sentence is checked against its abstract | claims checked, claims supported |
 
 Under every step there is a comment box. The sidebar has the model switch
-(Haiku default, Sonnet marked as 30x the price), a cost cap slider that stops
+(Haiku; Sonnet shown greyed out, enable with `ALLOW_SONNET` in `app.py`), a cost cap slider that stops
 the buttons when the session has spent that much, the running total, and
 **Download report (.md)**: every setting, prompt, table, the review, the
 verification rows, the comments and the cost in one file.

@@ -161,12 +161,20 @@ def md_table(rows):
 
 # ---------------------------------------------------------------- sidebar: controls first, totals at the end
 
+ALLOW_SONNET = False   # flip to True to let students pick Sonnet 5.5
+
 with st.sidebar:
     st.subheader("Model")
-    model_label = st.radio(
-        "Chat model", list(L.MODELS), key="model_label",
-        captions=["$0.10 in / $0.50 out per M tokens", "$3 in / $15 out per M tokens, 30x Haiku"],
-    )
+    if ALLOW_SONNET:
+        model_label = st.radio(
+            "Chat model", list(L.MODELS), key="model_label",
+            captions=["$0.10 in / $0.50 out per M tokens", "$3 in / $15 out per M tokens, 30x Haiku"],
+        )
+    else:
+        model_label = "Haiku 5.5"
+        st.radio("Chat model", ["Haiku 5.5"], key="model_label", captions=["$0.10 in / $0.50 out per M tokens"])
+        st.toggle("Sonnet 5.5, $3 in / $15 out, 30x Haiku", value=False, disabled=True,
+                  help="Switched off for the class. The instructor can enable it in app.py.")
     MODEL = L.MODELS[model_label]
     st.subheader("Cost cap")
     CAP_CENTS = st.slider("Stop making calls after (cents)", 1, 50, 5, key="cap_cents")
@@ -178,10 +186,10 @@ with st.sidebar:
 st.header("Q1. Build corpus")
 st.markdown(
     "A corpus is a set of PubMed abstracts, each turned into a 1,536-number vector "
-    "with `text-embedding-3-small`. Use a pool the instructor prepared, or write "
-    "your own PubMed query."
+    "with `text-embedding-3-small`. Write your own PubMed query, or use a pool the "
+    "instructor prepared."
 )
-source = st.radio("Source", ["Shipped pool", "My own PubMed query"], horizontal=True, key="source")
+source = st.radio("Source", ["My own PubMed query", "Shipped pool"], horizontal=True, key="source")
 if source == "Shipped pool":
     pools = L.list_pools()
     if not pools:
@@ -197,7 +205,8 @@ else:
     OWN_QUERY = st.text_input("PubMed query", key="own_query",
                               placeholder='(knee) AND (MRI) AND ("deep learning" OR "machine learning") AND (pain)')
     OWN_RETMAX = st.slider("Max records", 50, 500, 200, 50, key="own_retmax")
-    OWN_EXCLUDE = st.toggle("Exclude reviews, editorials, letters, meta-analyses", value=True, key="own_exclude")
+    OWN_EXCLUDE = True   # reviews, editorials, letters, meta-analyses are always excluded
+    st.caption("Reviews, editorials, letters and meta-analyses are excluded automatically.")
     q1_sig = ("custom", OWN_QUERY.strip(), OWN_RETMAX, OWN_EXCLUDE)
     POOL_KEY = "custom"
 inputs_changed("q1", q1_sig)
