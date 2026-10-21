@@ -1,0 +1,9 @@
+streamlit>=1.46
+anthropic>=1.13
+openai>=1.50
+numpy
+requests
+python-dotenv
+
+# Instructor reference script only (review_pipeline.py); not needed by the app.
+# minsearch

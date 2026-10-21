@@ -1,0 +1,7 @@
+{
+ "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+ "anchor": "41308576",
+ "companions": ["42229468", "33708918"],
+ "companion_seed": 42,
+ "note": "anchor = Ledda 2026, AI as first reader on 4104 BioMILD scans. companions = random.Random(42).sample(pool minus anchor, 2)"
+}

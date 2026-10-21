@@ -1,0 +1,6 @@
+.venv/
+.env
+*.db
+.ipynb_checkpoints/
+__pycache__/
+pools/custom/
