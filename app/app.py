@@ -196,9 +196,7 @@ with st.sidebar:
 st.header("Q1. Build corpus")
 st.markdown(
     "A corpus is a set of PubMed abstracts, each turned into a 1,536-number vector "
-    "with `text-embedding-3-small`. Write your own PubMed query, or use a pool the "
-    "instructor prepared. A query with more hits than the record limit keeps the most "
-    "relevant ones, not the newest."
+    "with `text-embedding-3-small`."
 )
 source = st.radio("Source", ["My own PubMed query", "Shipped pool"], horizontal=True, key="source")
 if source == "Shipped pool":
@@ -208,17 +206,14 @@ if source == "Shipped pool":
         st.stop()
     POOL = st.selectbox("Pool", pools, index=pools.index(L.DEFAULT_POOL) if L.DEFAULT_POOL in pools else 0, key="pool")
     PAPERS = L.load_papers(POOL)
-    st.caption(f"PubMed query behind this pool: `{L.pool_query(POOL)}` plus the review exclusion.")
+    st.caption(f"`{L.pool_query(POOL)}`")
     q1_sig = ("pool", POOL)
     POOL_KEY = POOL
 else:
     POOL, PAPERS = None, None
     OWN_QUERY = st.text_input("PubMed query", key="own_query", value=DEMO["query"],
                               placeholder='(knee) AND (MRI) AND ("deep learning" OR "machine learning") AND (pain)')
-    OWN_RETMAX = st.slider("Max records", 50, 500, 200, 50, key="own_retmax")
     OWN_EXCLUDE = True   # reviews, editorials, letters, meta-analyses are always excluded
-    st.caption("Reviews, editorials, letters and meta-analyses are excluded automatically.")
-    q1_sig = ("custom", OWN_QUERY.strip(), OWN_RETMAX, OWN_EXCLUDE)
     POOL_KEY = "custom"
 default_fixed = ", ".join([PAPERS["anchor"]] + PAPERS["companions"]) if PAPERS else DEMO["pmids"]
 FIXED_TEXT = st.text_input(
@@ -228,7 +223,10 @@ FIXED_TEXT = st.text_input(
 )
 FIXED = re.findall(r"\d{7,8}", FIXED_TEXT)[:3]
 if FIXED_TEXT.strip() and len(FIXED) != 3:
-    st.warning("Give exactly three PMIDs. They are added to the pool, drawn in red on the map, and graded in Q2.")
+    st.warning("Give exactly three PMIDs.")
+if POOL is None:
+    OWN_RETMAX = st.slider("Max records", 50, 300, 200, 50, key="own_retmax")
+    q1_sig = ("custom", OWN_QUERY.strip(), OWN_RETMAX, OWN_EXCLUDE)
 q1_sig = q1_sig + (tuple(FIXED),)
 inputs_changed("q1", q1_sig)
 
