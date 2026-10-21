@@ -219,6 +219,27 @@ def tsne_2d(vectors, seed=42):
     return TSNE(n_components=2, perplexity=perplexity, init="pca", random_state=seed).fit_transform(vectors)
 
 
+def add_papers(documents, vectors, pmids, progress=None):
+    """Append specific papers (the student's anchor and companions) to a
+    corpus. Papers already in the pool are left where they are; the rest are
+    fetched, given a citation count, embedded, and appended. Returns
+    (documents, vectors, usage_or_None, missing_pmids). Inputs are not mutated."""
+    have = {d["pmid"] for d in documents}
+    wanted = [p for p in pmids if p not in have]
+    documents, vectors = list(documents), vectors
+    if not wanted:
+        return documents, vectors, None, []
+    if progress:
+        progress(f"Fetching {len(wanted)} chosen paper(s) from PubMed ...")
+    extra = load_corpus(wanted)
+    ensure_citations(extra)
+    missing = [p for p in wanted if p not in {d["pmid"] for d in extra}]
+    if not extra:
+        return documents, vectors, None, missing
+    ev, usage = embed_texts([d["title"] + "\n" + d["abstract"] for d in extra])
+    return documents + extra, np.vstack([vectors, ev]), usage, missing
+
+
 def load_papers(pool=DEFAULT_POOL):
     """The question, anchor and companion PMIDs for a pool."""
     with open(pool_path(pool, "papers.json")) as f:

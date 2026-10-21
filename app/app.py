@@ -13,6 +13,7 @@ Run:  streamlit run app.py
 import datetime as dt
 import json
 import os
+import re
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -210,6 +211,16 @@ else:
     st.caption("Reviews, editorials, letters and meta-analyses are excluded automatically.")
     q1_sig = ("custom", OWN_QUERY.strip(), OWN_RETMAX, OWN_EXCLUDE)
     POOL_KEY = "custom"
+default_fixed = ", ".join([PAPERS["anchor"]] + PAPERS["companions"]) if PAPERS else ""
+FIXED_TEXT = st.text_input(
+    "Anchor paper and two companion papers (three PMIDs, comma separated; the first is the anchor)",
+    value=default_fixed, key=f"fixed_{POOL_KEY}",
+    placeholder="32055951, 40885690, 33337584",
+)
+FIXED = re.findall(r"\d{7,8}", FIXED_TEXT)[:3]
+if FIXED_TEXT.strip() and len(FIXED) != 3:
+    st.warning("Give exactly three PMIDs. They are added to the pool, drawn in red on the map, and graded in Q2.")
+q1_sig = q1_sig + (tuple(FIXED),)
 inputs_changed("q1", q1_sig)
 
 
@@ -240,6 +251,14 @@ if run_button("Build corpus", "btn_q1"):
             status.update(label="Pool build failed", state="error")
             st.error(str(e))
             docs = None
+    if docs and len(FIXED) == 3:
+        with st.spinner("Adding your three papers ..."):
+            docs, V, u_extra, missing = L.add_papers(docs, V, FIXED)
+        if u_extra:
+            ss.ledger.add("Q1 embed chosen papers", u_extra)
+        if missing:
+            st.warning("Not found in PubMed, or no abstract: " + ", ".join(missing) + ". They are left out.")
+        meta["fixed"] = [p for p in FIXED if p not in missing]
     if docs:
         if usage:
             ss.ledger.add("Q1 embed", usage)
@@ -253,12 +272,13 @@ def cached_map(pool_id, _vectors):
     return L.tsne_2d(_vectors)
 
 
-def paper_map(docs, V, pool_id):
-    """Every paper as a dot, placed by t-SNE on its embedding. Hover for the title."""
+def paper_map(docs, V, pool_id, fixed=()):
+    """Every paper as a dot, placed by t-SNE on its embedding. Hover for the
+    title. The anchor and companions are drawn in red with their names."""
     import altair as alt
     import pandas as pd
 
-    xy = cached_map(pool_id, V)
+    xy = cached_map(pool_id + "|" + ",".join(fixed), V)
     cites = [d.get("citations") for d in docs]
     have_cites = any(c is not None for c in cites)
     df = pd.DataFrame({
@@ -277,8 +297,18 @@ def paper_map(docs, V, pool_id):
     )
     if have_cites:
         enc["size"] = alt.Size("size:Q", scale=alt.Scale(domain=[0, CITE_CAP], range=[25, 500]), legend=None)
-    chart = alt.Chart(df).mark_circle(opacity=0.75).encode(**enc).properties(height=420).interactive()
-    st.altair_chart(chart, use_container_width=True)
+    chart = alt.Chart(df).mark_circle(opacity=0.75).encode(**enc)
+    red = df[df["PMID"].isin(fixed)]
+    if len(red):
+        dots = alt.Chart(red).mark_circle(color="red", stroke="black", strokeWidth=1.5, opacity=1).encode(
+            x="x", y="y", tooltip=["PMID", "Paper", "Title", "Citations"],
+            **({"size": enc["size"]} if "size" in enc else {}))
+        labels = alt.Chart(red).mark_text(dy=-14, color="red", fontWeight="bold").encode(
+            x="x", y="y", text="Paper")
+        chart = chart + dots + labels
+    st.altair_chart(chart.properties(height=420).interactive(), use_container_width=True)
+    if len(red):
+        st.caption("Red: your anchor and companion papers.")
     if have_cites:
         top = df.loc[df["size"].idxmax()]
         n_counted = sum(c is not None for c in cites)
@@ -301,7 +331,7 @@ else:
     years = sorted({d["year"] for d in docs if d.get("year")})
     st.success(f"{len(docs)} documents, vectors {V.shape[0]} x {V.shape[1]}, loaded from {meta['source']}. "
                f"Years {years[0]} to {years[-1]}.")
-    paper_map(docs, V, meta["pool"])
+    paper_map(docs, V, meta["pool"], fixed=meta.get("fixed", ()))
     st.caption("**Report: the document count.**")
     comment_box("q1")
 
@@ -325,7 +355,8 @@ def build_report():
     lines += ["## Q1. Corpus", ""]
     if meta:
         lines += [f"- Pool: `{meta['pool']}`", f"- PubMed query: `{meta['query']}`",
-                  f"- Documents: {len(ss.docs)}", ""]
+                  f"- Documents: {len(ss.docs)}",
+                  f"- Anchor and companions: {', '.join(meta.get('fixed', [])) or 'not given'}", ""]
     lines += [f"Comment: {ss.get('comment_q1', '')}", ""]
     if "docs" in ss:
         lines += ["## Research question", "", ss.get("active_question", ""), ""]
@@ -380,19 +411,22 @@ pmids = [d["pmid"] for d in docs]
 st.header("Q2. Grade three fixed papers")
 st.markdown(
     "The model grades three papers for how well they answer the research question: "
-    "an **anchor** you choose and two **companions** drawn at random (seed 42). "
+    "the **anchor** and two **companions** you named in Q1. "
     "The grading prompt below decides the scale and the return format. Edit it freely: "
     "the table shows whatever keys the model returns."
 )
 default_q = PAPERS["question"] if PAPERS else ""
 QUESTION = st.text_input("Research question", value=default_q, key=f"question_{POOL_KEY}").strip()
 ss.active_question = QUESTION
-default_anchor = PAPERS["anchor"] if PAPERS and PAPERS["anchor"] in by else pmids[0]
-ANCHOR = st.selectbox("Anchor paper", pmids, index=pmids.index(default_anchor),
-                      format_func=lambda p: paper_label(by[p]), key=f"anchor_{POOL_KEY}")
-if PAPERS and ANCHOR == PAPERS["anchor"]:
-    COMPANIONS = PAPERS["companions"]
+fixed_in_pool = [p for p in meta.get("fixed", []) if p in by]
+if len(fixed_in_pool) == 3:
+    ANCHOR, COMPANIONS = fixed_in_pool[0], fixed_in_pool[1:]
+    st.caption("Anchor and companions come from the PMIDs you typed in Q1.")
 else:
+    st.caption("No PMIDs were given in Q1, so pick an anchor here; the companions are two random papers (seed 42).")
+    default_anchor = PAPERS["anchor"] if PAPERS and PAPERS["anchor"] in by else pmids[0]
+    ANCHOR = st.selectbox("Anchor paper", pmids, index=pmids.index(default_anchor),
+                          format_func=lambda p: paper_label(by[p]), key=f"anchor_{POOL_KEY}")
     COMPANIONS = L.companions(docs, ANCHOR)
 GRADE_PROMPT = prompt_editor("grade", L.GRADE_INSTRUCTIONS, "Grading prompt, shared by Q2, Q3 and Q4 (edit me)")
 inputs_changed("q2", (QUESTION, ANCHOR, tuple(COMPANIONS), GRADE_PROMPT))
