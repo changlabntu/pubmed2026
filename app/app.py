@@ -242,6 +242,9 @@ if run_button("Build corpus", "btn_q1"):
             ss.ledger.add("Q1 embed", usage)
         ss.docs, ss.V, ss.corpus_meta = docs, V, meta
 
+CITE_CAP = 100   # citations above this all draw at the largest dot size
+
+
 @st.cache_data(show_spinner="Drawing the map ...")
 def cached_map(pool_id, _vectors):
     return L.tsne_2d(_vectors)
@@ -253,25 +256,29 @@ def paper_map(docs, V, pool_id):
     import pandas as pd
 
     xy = cached_map(pool_id, V)
+    cites = [d.get("citations") for d in docs]
+    have_cites = any(c is not None for c in cites)
     df = pd.DataFrame({
         "x": xy[:, 0], "y": xy[:, 1],
         "PMID": [d["pmid"] for d in docs],
         "Paper": [f"{d['first_author']} {d['year']}" for d in docs],
         "Title": [d["title"] for d in docs],
         "Year": [d.get("year") for d in docs],
+        "Citations": [c if c is not None else 0 for c in cites],
     })
-    chart = (
-        alt.Chart(df)
-        .mark_circle(size=70, opacity=0.8)
-        .encode(
-            x=alt.X("x", axis=None), y=alt.Y("y", axis=None),
-            color=alt.Color("Year:Q", scale=alt.Scale(scheme="viridis")),
-            tooltip=["PMID", "Paper", "Title"],
-        )
-        .properties(height=420)
-        .interactive()
+    df["size"] = df["Citations"].clip(upper=CITE_CAP)
+    enc = dict(
+        x=alt.X("x", axis=None), y=alt.Y("y", axis=None),
+        color=alt.Color("Year:Q", scale=alt.Scale(scheme="viridis")),
+        tooltip=["PMID", "Paper", "Title", "Citations"],
     )
+    if have_cites:
+        enc["size"] = alt.Size("size:Q", scale=alt.Scale(domain=[0, CITE_CAP], range=[25, 500]), legend=None)
+    chart = alt.Chart(df).mark_circle(opacity=0.75).encode(**enc).properties(height=420).interactive()
     st.altair_chart(chart, use_container_width=True)
+    if have_cites:
+        st.caption(f"Dot size: citation count from NIH iCite, capped at {CITE_CAP}. "
+                   f"Most cited: {df.loc[df['Citations'].idxmax(), 'Paper']} ({df['Citations'].max()}).")
 
 
 if "docs" not in ss:

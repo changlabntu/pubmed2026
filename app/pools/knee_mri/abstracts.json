@@ -30,7 +30,8 @@
    "Sensitivity and Specificity"
   ],
   "keywords": [],
-  "doi": "10.1109/IEMBS.2007.4352538"
+  "doi": "10.1109/IEMBS.2007.4352538",
+  "citations": 6
  },
  {
   "pmid": "28084653",
@@ -68,7 +69,8 @@
    "registration",
    "segmentation"
   ],
-  "doi": "10.1002/jor.23519"
+  "doi": "10.1002/jor.23519",
+  "citations": 72
  },
  {
   "pmid": "29526784",
@@ -105,7 +107,8 @@
    "Knee MRI",
    "Statistical shape models"
   ],
-  "doi": "10.1016/j.joca.2018.02.907"
+  "doi": "10.1016/j.joca.2018.02.907",
+  "citations": 67
  },
  {
   "pmid": "30063195",
@@ -146,7 +149,8 @@
    "Young Adult"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.2018172986"
+  "doi": "10.1148/radiol.2018172986",
+  "citations": 174
  },
  {
   "pmid": "31002938",
@@ -192,7 +196,8 @@
    "Phenotype",
    "Progressors"
   ],
-  "doi": "10.1016/j.joca.2018.12.027"
+  "doi": "10.1016/j.joca.2018.12.027",
+  "citations": 62
  },
  {
   "pmid": "31402520",
@@ -244,7 +249,8 @@
    "patella",
    "segmentation"
   ],
-  "doi": "10.1002/mrm.27920"
+  "doi": "10.1002/mrm.27920",
+  "citations": 26
  },
  {
   "pmid": "31872357",
@@ -289,7 +295,8 @@
    "Magnetic resonance imaging",
    "Muscle"
   ],
-  "doi": "10.1007/s10334-019-00816-5"
+  "doi": "10.1007/s10334-019-00816-5",
+  "citations": 39
  },
  {
   "pmid": "32055951",
@@ -331,7 +338,8 @@
    "Osteoarthritis",
    "Pain"
   ],
-  "doi": "10.1007/s00330-020-06658-3"
+  "doi": "10.1007/s00330-020-06658-3",
+  "citations": 42
  },
  {
   "pmid": "32379222",
@@ -358,7 +366,8 @@
    "Magnetic Resonance Imaging"
   ],
   "keywords": [],
-  "doi": "10.1097/j.pain.0000000000001904"
+  "doi": "10.1097/j.pain.0000000000001904",
+  "citations": 46
  },
  {
   "pmid": "32691905",
@@ -395,7 +404,8 @@
    "early osteoarthritis",
    "imaging biomarkers"
   ],
-  "doi": "10.1002/jor.24811"
+  "doi": "10.1002/jor.24811",
+  "citations": 47
  },
  {
   "pmid": "32723735",
@@ -451,7 +461,8 @@
    "qualitative research",
    "rheumatology"
   ],
-  "doi": "10.1136/bmjopen-2019-035101"
+  "doi": "10.1136/bmjopen-2019-035101",
+  "citations": 66
  },
  {
   "pmid": "32755384",
@@ -500,7 +511,8 @@
    "knee injuries",
    "radiology"
   ],
-  "doi": "10.2214/AJR.20.24172"
+  "doi": "10.2214/AJR.20.24172",
+  "citations": 45
  },
  {
   "pmid": "32958644",
@@ -539,7 +551,8 @@
    "early diagnosis",
    "osteoarthritis"
   ],
-  "doi": "10.1073/pnas.1917405117"
+  "doi": "10.1073/pnas.1917405117",
+  "citations": 35
  },
  {
   "pmid": "33188042",
@@ -571,7 +584,8 @@
    "magnetic resonance imaging",
    "osteoarthritis"
   ],
-  "doi": "10.1136/annrheumdis-2020-217160"
+  "doi": "10.1136/annrheumdis-2020-217160",
+  "citations": 100
  },
  {
   "pmid": "33253951",
@@ -615,7 +629,8 @@
    "Femoral nerve block",
    "Multiple ligament trauma repair"
   ],
-  "doi": "10.1016/j.wneu.2020.11.122"
+  "doi": "10.1016/j.wneu.2020.11.122",
+  "citations": 5
  },
  {
   "pmid": "33337584",
@@ -650,7 +665,8 @@
    "United States"
   ],
   "keywords": [],
-  "doi": "10.1002/acr.24539"
+  "doi": "10.1002/acr.24539",
+  "citations": 26
  },
  {
   "pmid": "33631317",
@@ -684,7 +700,8 @@
    "T2 relaxation time",
    "Texture analysis"
   ],
-  "doi": "10.1016/j.joca.2021.02.561"
+  "doi": "10.1016/j.joca.2021.02.561",
+  "citations": 14
  },
  {
   "pmid": "33747150",
@@ -710,7 +727,8 @@
    "machine learning",
    "structural progressor"
   ],
-  "doi": "10.1177/1759720X21993254"
+  "doi": "10.1177/1759720X21993254",
+  "citations": 27
  },
  {
   "pmid": "33749148",
@@ -743,7 +761,8 @@
    "United States"
   ],
   "keywords": [],
-  "doi": "10.1002/acr.24601"
+  "doi": "10.1002/acr.24601",
+  "citations": 34
  },
  {
   "pmid": "33910605",
@@ -785,7 +804,8 @@
    "Platelet-rich plasma",
    "Texture analysis"
   ],
-  "doi": "10.1186/s13018-021-02437-y"
+  "doi": "10.1186/s13018-021-02437-y",
+  "citations": 6
  },
  {
   "pmid": "33973737",
@@ -824,7 +844,8 @@
    "Severity of Illness Index"
   ],
   "keywords": [],
-  "doi": "10.1002/art.41808"
+  "doi": "10.1002/art.41808",
+  "citations": 19
  },
  {
   "pmid": "34031789",
@@ -853,7 +874,8 @@
    "Medical image segmentation",
    "UNet ++"
   ],
-  "doi": "10.1007/s10278-021-00464-z"
+  "doi": "10.1007/s10278-021-00464-z",
+  "citations": 6
  },
  {
   "pmid": "34035386",
@@ -889,7 +911,8 @@
    "Radiographic Image Interpretation, Computer-Assisted"
   ],
   "keywords": [],
-  "doi": "10.1038/s41598-021-90292-6"
+  "doi": "10.1038/s41598-021-90292-6",
+  "citations": 31
  },
  {
   "pmid": "34048288",
@@ -928,7 +951,8 @@
    "machine learning",
    "osteochondral allograft"
   ],
-  "doi": "10.1177/03635465211015179"
+  "doi": "10.1177/03635465211015179",
+  "citations": 30
  },
  {
   "pmid": "34663440",
@@ -962,7 +986,8 @@
    "Osteoarthritis, Knee"
   ],
   "keywords": [],
-  "doi": "10.1186/s13075-021-02634-4"
+  "doi": "10.1186/s13075-021-02634-4",
+  "citations": 56
  },
  {
   "pmid": "34753963",
@@ -992,7 +1017,8 @@
    "Osteoarthritis, Knee"
   ],
   "keywords": [],
-  "doi": "10.1038/s41598-021-01111-x"
+  "doi": "10.1038/s41598-021-01111-x",
+  "citations": 17
  },
  {
   "pmid": "34800631",
@@ -1029,7 +1055,8 @@
    "Osteoarthritis",
    "XGboost"
   ],
-  "doi": "10.1016/j.joca.2021.11.007"
+  "doi": "10.1016/j.joca.2021.11.007",
+  "citations": 31
  },
  {
   "pmid": "34876922",
@@ -1061,7 +1088,8 @@
    "Visual Cortex"
   ],
   "keywords": [],
-  "doi": "10.1155/2021/7344102"
+  "doi": "10.1155/2021/7344102",
+  "citations": 2
  },
  {
   "pmid": "34900003",
@@ -1088,7 +1116,8 @@
    "pain",
    "psychological factors"
   ],
-  "doi": "10.1177/1759720X211059614"
+  "doi": "10.1177/1759720X211059614",
+  "citations": 10
  },
  {
   "pmid": "34938819",
@@ -1116,7 +1145,8 @@
    "hip impingement",
    "impingement simulation"
   ],
-  "doi": "10.1177/23259671211046916"
+  "doi": "10.1177/23259671211046916",
+  "citations": 21
  },
  {
   "pmid": "35204370",
@@ -1148,7 +1178,8 @@
    "machine learning",
    "medical imaging"
   ],
-  "doi": "10.3390/diagnostics12020279"
+  "doi": "10.3390/diagnostics12020279",
+  "citations": 27
  },
  {
   "pmid": "35245407",
@@ -1180,7 +1211,8 @@
    "Disease Progression"
   ],
   "keywords": [],
-  "doi": "10.1002/acr.24877"
+  "doi": "10.1002/acr.24877",
+  "citations": 14
  },
  {
   "pmid": "35262842",
@@ -1209,7 +1241,8 @@
    "JSW",
    "Osteoarthritis"
   ],
-  "doi": "10.1007/s11547-022-01476-7"
+  "doi": "10.1007/s11547-022-01476-7",
+  "citations": 54
  },
  {
   "pmid": "35364383",
@@ -1242,7 +1275,8 @@
    "Osteoarthritis",
    "Tissue segmentation"
   ],
-  "doi": "10.1016/j.compmedimag.2022.102056"
+  "doi": "10.1016/j.compmedimag.2022.102056",
+  "citations": 21
  },
  {
   "pmid": "35727152",
@@ -1278,7 +1312,8 @@
    "Thigh"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.212771"
+  "doi": "10.1148/radiol.212771",
+  "citations": 74
  },
  {
   "pmid": "35951046",
@@ -1322,7 +1357,8 @@
    "Skeletal muscle degeneration",
    "Symptom worsening"
   ],
-  "doi": "10.1007/s00330-022-09035-4"
+  "doi": "10.1007/s00330-022-09035-4",
+  "citations": 11
  },
  {
   "pmid": "36016997",
@@ -1348,7 +1384,8 @@
    "knee joint",
    "magnetic resonance imaging"
   ],
-  "doi": "10.3389/fmed.2022.928642"
+  "doi": "10.3389/fmed.2022.928642",
+  "citations": 6
  },
  {
   "pmid": "36243308",
@@ -1408,7 +1445,8 @@
    "Prediction",
    "Radiography"
   ],
-  "doi": "10.1016/j.joca.2022.10.001"
+  "doi": "10.1016/j.joca.2022.10.001",
+  "citations": 37
  },
  {
   "pmid": "36292003",
@@ -1429,7 +1467,8 @@
    "medical image processing",
    "tear detection"
   ],
-  "doi": "10.3390/diagnostics12102314"
+  "doi": "10.3390/diagnostics12102314",
+  "citations": 13
  },
  {
   "pmid": "36334697",
@@ -1472,7 +1511,8 @@
    "Osteoarthritis",
    "Radiomics"
   ],
-  "doi": "10.1016/j.joca.2022.10.014"
+  "doi": "10.1016/j.joca.2022.10.014",
+  "citations": 26
  },
  {
   "pmid": "36474467",
@@ -1496,7 +1536,8 @@
    "MRI",
    "Software assessment"
   ],
-  "doi": "10.1016/j.ocarto.2022.100234"
+  "doi": "10.1016/j.ocarto.2022.100234",
+  "citations": 15
  },
  {
   "pmid": "36732785",
@@ -1527,7 +1568,8 @@
    "Oxford Knee Score (OKS) questionnaire",
    "Quality of life utility index"
   ],
-  "doi": "10.1186/s13018-023-03522-0"
+  "doi": "10.1186/s13018-023-03522-0",
+  "citations": 9
  },
  {
   "pmid": "36787663",
@@ -1563,7 +1605,8 @@
    "Neuroimaging",
    "Physical performance"
   ],
-  "doi": "10.1016/j.gerinurse.2023.01.019"
+  "doi": "10.1016/j.gerinurse.2023.01.019",
+  "citations": 6
  },
  {
   "pmid": "36868795",
@@ -1597,7 +1640,8 @@
    "Accelerometer",
    "Knee"
   ],
-  "doi": "10.1136/bjsports-2022-106142"
+  "doi": "10.1136/bjsports-2022-106142",
+  "citations": 18
  },
  {
   "pmid": "37041609",
@@ -1634,7 +1678,8 @@
    "Muscle degeneration",
    "Thyroid"
   ],
-  "doi": "10.1186/s13075-023-03012-y"
+  "doi": "10.1186/s13075-023-03012-y",
+  "citations": 10
  },
  {
   "pmid": "37395296",
@@ -1683,7 +1728,8 @@
    "clinical presentation",
    "mutation"
   ],
-  "doi": "10.1002/jimd.12647"
+  "doi": "10.1002/jimd.12647",
+  "citations": 5
  },
  {
   "pmid": "37426615",
@@ -1707,7 +1753,8 @@
    "medical imaging",
    "rheumatoid arthritis"
   ],
-  "doi": "10.1515/biol-2022-0611"
+  "doi": "10.1515/biol-2022-0611",
+  "citations": 7
  },
  {
   "pmid": "37581080",
@@ -1736,7 +1783,8 @@
    "osteoarthritis (OA)",
    "progression"
   ],
-  "doi": "10.21037/qims-22-1251"
+  "doi": "10.21037/qims-22-1251",
+  "citations": 29
  },
  {
   "pmid": "37597705",
@@ -1769,7 +1817,8 @@
    "Magnetic Resonance Imaging"
   ],
   "keywords": [],
-  "doi": "10.1016/j.arthro.2023.08.010"
+  "doi": "10.1016/j.arthro.2023.08.010",
+  "citations": 28
  },
  {
   "pmid": "37745529",
@@ -1801,7 +1850,8 @@
    "local cartilage thickness",
    "prognosis"
   ],
-  "doi": "10.1101/2023.09.12.23295398"
+  "doi": "10.1101/2023.09.12.23295398",
+  "citations": 1
  },
  {
   "pmid": "37747455",
@@ -1831,7 +1881,8 @@
    "Magnetic Resonance Imaging"
   ],
   "keywords": [],
-  "doi": "10.1097/RLI.0000000000001016"
+  "doi": "10.1097/RLI.0000000000001016",
+  "citations": 11
  },
  {
   "pmid": "37952863",
@@ -1871,7 +1922,8 @@
    "longitudinal",
    "psychological factors"
   ],
-  "doi": "10.1016/j.jpain.2023.11.006"
+  "doi": "10.1016/j.jpain.2023.11.006",
+  "citations": 7
  },
  {
   "pmid": "38137392",
@@ -1900,7 +1952,8 @@
    "foot drop",
    "magnetic resonance image"
   ],
-  "doi": "10.3390/biomedicines11123171"
+  "doi": "10.3390/biomedicines11123171",
+  "citations": 4
  },
  {
   "pmid": "38651559",
@@ -1937,7 +1990,8 @@
    "machine learning",
    "osteoarthritis"
   ],
-  "doi": "10.1002/ksa.12196"
+  "doi": "10.1002/ksa.12196",
+  "citations": 2
  },
  {
   "pmid": "38671795",
@@ -1964,7 +2018,8 @@
    "knee osteoarthritis",
    "segmentation"
   ],
-  "doi": "10.3390/bioengineering11040374"
+  "doi": "10.3390/bioengineering11040374",
+  "citations": 9
  },
  {
   "pmid": "38686814",
@@ -1999,7 +2054,8 @@
    "Menisci, Tibial"
   ],
   "keywords": [],
-  "doi": "10.1097/PHM.0000000000002507"
+  "doi": "10.1097/PHM.0000000000002507",
+  "citations": 4
  },
  {
   "pmid": "38857414",
@@ -2039,7 +2095,8 @@
    "Image Interpretation, Computer-Assisted"
   ],
   "keywords": [],
-  "doi": "10.1097/RLI.0000000000001093"
+  "doi": "10.1097/RLI.0000000000001093",
+  "citations": 11
  },
  {
   "pmid": "38926487",
@@ -2081,7 +2138,8 @@
    "Machine learning",
    "Osteoarthritis"
   ],
-  "doi": "10.1038/s41598-024-65613-0"
+  "doi": "10.1038/s41598-024-65613-0",
+  "citations": 14
  },
  {
   "pmid": "38927762",
@@ -2113,7 +2171,8 @@
    "inter-rater reliability",
    "unsupervised segmentation"
   ],
-  "doi": "10.3390/bioengineering11060526"
+  "doi": "10.3390/bioengineering11060526",
+  "citations": 4
  },
  {
   "pmid": "39020156",
@@ -2158,7 +2217,8 @@
    "Segmentation",
    "Weak supervision"
   ],
-  "doi": "10.1007/s10278-024-01198-4"
+  "doi": "10.1007/s10278-024-01198-4",
+  "citations": 5
  },
  {
   "pmid": "39190787",
@@ -2195,7 +2255,8 @@
    "Reproducibility of Results"
   ],
   "keywords": [],
-  "doi": "10.1097/RLI.0000000000001118"
+  "doi": "10.1097/RLI.0000000000001118",
+  "citations": 9
  },
  {
   "pmid": "39199782",
@@ -2219,7 +2280,8 @@
    "machine learning",
    "radiograph"
   ],
-  "doi": "10.3390/bioengineering11080824"
+  "doi": "10.3390/bioengineering11080824",
+  "citations": 3
  },
  {
   "pmid": "39287521",
@@ -2257,7 +2319,8 @@
    "Risk Factors"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.240470"
+  "doi": "10.1148/radiol.240470",
+  "citations": 18
  },
  {
   "pmid": "39345660",
@@ -2284,7 +2347,8 @@
    "knowledge graph",
    "magnetic resonance imaging"
   ],
-  "doi": "10.3389/fsurg.2024.1387351"
+  "doi": "10.3389/fsurg.2024.1387351",
+  "citations": 1
  },
  {
   "pmid": "39464204",
@@ -2313,7 +2377,8 @@
    "machine learning",
    "second injury"
   ],
-  "doi": "10.1177/23259671241282316"
+  "doi": "10.1177/23259671241282316",
+  "citations": 13
  },
  {
   "pmid": "39500982",
@@ -2350,7 +2415,8 @@
    "Knee osteoarthritis",
    "Magnetic resonance imaging (MRI)"
   ],
-  "doi": "10.1038/s41598-024-78203-x"
+  "doi": "10.1038/s41598-024-78203-x",
+  "citations": 7
  },
  {
   "pmid": "39697601",
@@ -2390,7 +2456,8 @@
    "nonoperative",
    "osteochondritis dissecans"
   ],
-  "doi": "10.1177/23259671241297145"
+  "doi": "10.1177/23259671241297145",
+  "citations": 3
  },
  {
   "pmid": "39744045",
@@ -2415,7 +2482,8 @@
    "self-supervised learning",
    "time-to-TKR prediction"
   ],
-  "doi": "10.1093/radadv/umae030"
+  "doi": "10.1093/radadv/umae030",
+  "citations": 3
  },
  {
   "pmid": "39864732",
@@ -2459,7 +2527,8 @@
    "Knee-adjacent subcutaneous fat",
    "Pain"
   ],
-  "doi": "10.1016/j.joca.2025.01.001"
+  "doi": "10.1016/j.joca.2025.01.001",
+  "citations": 8
  },
  {
   "pmid": "39874226",
@@ -2494,7 +2563,8 @@
    "Machine Learning",
    "Osteoarthritis"
   ],
-  "doi": "10.1136/ard-2024-225872"
+  "doi": "10.1136/ard-2024-225872",
+  "citations": 26
  },
  {
   "pmid": "39896989",
@@ -2522,7 +2592,8 @@
    "quadriceps fat pad",
    "radiomics"
   ],
-  "doi": "10.3389/fspor.2025.1535519"
+  "doi": "10.3389/fspor.2025.1535519",
+  "citations": 4
  },
  {
   "pmid": "39991097",
@@ -2554,7 +2625,8 @@
    "Predictive preventive personalised medicine (PPPM / 3PM)",
    "Risk assessment"
   ],
-  "doi": "10.1007/s13167-025-00399-3"
+  "doi": "10.1007/s13167-025-00399-3",
+  "citations": 2
  },
  {
   "pmid": "40061840",
@@ -2583,7 +2655,8 @@
    "Radiograph",
    "Total knee replacement"
   ],
-  "doi": "10.1016/j.ocarto.2025.100582"
+  "doi": "10.1016/j.ocarto.2025.100582",
+  "citations": 2
  },
  {
   "pmid": "40144553",
@@ -2634,7 +2707,8 @@
    "Osteoarthritis",
    "Radiomics"
   ],
-  "doi": "10.1016/j.jot.2025.01.007"
+  "doi": "10.1016/j.jot.2025.01.007",
+  "citations": 7
  },
  {
   "pmid": "40249263",
@@ -2667,7 +2741,8 @@
    "meniscal injury",
    "radiomics"
   ],
-  "doi": "10.1097/RCT.0000000000001759"
+  "doi": "10.1097/RCT.0000000000001759",
+  "citations": 1
  },
  {
   "pmid": "40663979",
@@ -2704,7 +2779,8 @@
    "Radiographic knee osteoarthritis",
    "Spatial-specific signal"
   ],
-  "doi": "10.1016/j.ejrad.2025.112294"
+  "doi": "10.1016/j.ejrad.2025.112294",
+  "citations": 0
  },
  {
   "pmid": "40715621",
@@ -2724,7 +2800,8 @@
   "year": 2025,
   "mesh": [],
   "keywords": [],
-  "doi": "10.1038/s41746-025-01771-3"
+  "doi": "10.1038/s41746-025-01771-3",
+  "citations": 2
  },
  {
   "pmid": "40799630",
@@ -2748,7 +2825,8 @@
    "Pain",
    "Prediction modeling"
   ],
-  "doi": "10.1016/j.ocarto.2025.100654"
+  "doi": "10.1016/j.ocarto.2025.100654",
+  "citations": 10
  },
  {
   "pmid": "40801163",
@@ -2786,7 +2864,8 @@
    "shoulder surgery",
    "vision transformer"
   ],
-  "doi": "10.1002/ksa.70000"
+  "doi": "10.1002/ksa.70000",
+  "citations": 2
  },
  {
   "pmid": "40802781",
@@ -2822,7 +2901,8 @@
    "Radiomics"
   ],
   "keywords": [],
-  "doi": "10.1371/journal.pone.0328299"
+  "doi": "10.1371/journal.pone.0328299",
+  "citations": 3
  },
  {
   "pmid": "40836996",
@@ -2856,7 +2936,8 @@
    "imaging",
    "radiomics"
   ],
-  "doi": "10.1016/j.ostima.2025.100263"
+  "doi": "10.1016/j.ostima.2025.100263",
+  "citations": 2
  },
  {
   "pmid": "40839548",
@@ -2899,7 +2980,8 @@
    "Radiomics"
   ],
   "keywords": [],
-  "doi": "10.1371/journal.pmed.1004665"
+  "doi": "10.1371/journal.pmed.1004665",
+  "citations": 9
  },
  {
   "pmid": "40885690",
@@ -2965,7 +3047,8 @@
    "Quality of Life"
   ],
   "keywords": [],
-  "doi": "10.1016/j.ard.2025.07.026"
+  "doi": "10.1016/j.ard.2025.07.026",
+  "citations": 11
  },
  {
   "pmid": "40930793",
@@ -3007,7 +3090,8 @@
    "partial sciatic nerve ligation",
    "resting-state functional magnetic resonance imaging"
   ],
-  "doi": "10.1248/bpb.b25-00045"
+  "doi": "10.1248/bpb.b25-00045",
+  "citations": 1
  },
  {
   "pmid": "40974550",
@@ -3047,7 +3131,8 @@
    "Osteoarthritis ‐ Post Traumatic",
    "Reconstruction"
   ],
-  "doi": "10.1002/jor.70067"
+  "doi": "10.1002/jor.70067",
+  "citations": 3
  },
  {
   "pmid": "40977252",
@@ -3075,7 +3160,8 @@
   "year": 2025,
   "mesh": [],
   "keywords": [],
-  "doi": "10.1002/acr2.70085"
+  "doi": "10.1002/acr2.70085",
+  "citations": 6
  },
  {
   "pmid": "40988654",
@@ -3099,7 +3185,8 @@
    "separable convolutions",
    "synthetic PET"
   ],
-  "doi": "10.3389/fninf.2025.1633273"
+  "doi": "10.3389/fninf.2025.1633273",
+  "citations": 1
  },
  {
   "pmid": "40993478",
@@ -3132,7 +3219,8 @@
    "Magnetic resonance imaging",
    "Osteoarthritis"
   ],
-  "doi": "10.1007/s10278-025-01678-1"
+  "doi": "10.1007/s10278-025-01678-1",
+  "citations": 0
  },
  {
   "pmid": "41013635",
@@ -3170,7 +3258,8 @@
    "Mild cognitive impairment",
    "Resting-State fMRI"
   ],
-  "doi": "10.1186/s13075-025-03646-0"
+  "doi": "10.1186/s13075-025-03646-0",
+  "citations": 4
  },
  {
   "pmid": "41020178",
@@ -3202,7 +3291,8 @@
    "machine learning",
    "socioenvironmental risk"
   ],
-  "doi": "10.1093/braincomms/fcaf344"
+  "doi": "10.1093/braincomms/fcaf344",
+  "citations": 1
  },
  {
   "pmid": "41029374",
@@ -3233,7 +3323,8 @@
    "Vision transformer (ViT)",
    "X-ray"
   ],
-  "doi": "10.1186/s12891-025-09137-2"
+  "doi": "10.1186/s12891-025-09137-2",
+  "citations": 3
  },
  {
   "pmid": "41071345",
@@ -3271,7 +3362,8 @@
    "Iloprost",
    "SONK"
   ],
-  "doi": "10.1007/s00402-025-06057-7"
+  "doi": "10.1007/s00402-025-06057-7",
+  "citations": 0
  },
  {
   "pmid": "41126321",
@@ -3311,7 +3403,8 @@
    "Knee osteoarthritis",
    "Knee pain"
   ],
-  "doi": "10.1186/s13075-025-03667-9"
+  "doi": "10.1186/s13075-025-03667-9",
+  "citations": 1
  },
  {
   "pmid": "41241647",
@@ -3355,7 +3448,8 @@
    "MR imaging",
    "Segmentation"
   ],
-  "doi": "10.1016/j.knee.2025.10.024"
+  "doi": "10.1016/j.knee.2025.10.024",
+  "citations": 0
  },
  {
   "pmid": "41285050",
@@ -3398,7 +3492,8 @@
    "MRI",
    "Menisci"
   ],
-  "doi": "10.1016/j.ejrad.2025.112552"
+  "doi": "10.1016/j.ejrad.2025.112552",
+  "citations": 1
  },
  {
   "pmid": "41335697",
@@ -3431,7 +3526,8 @@
    "Aged"
   ],
   "keywords": [],
-  "doi": "10.1109/EMBC58623.2025.11254878"
+  "doi": "10.1109/EMBC58623.2025.11254878",
+  "citations": 0
  },
  {
   "pmid": "41376347",
@@ -3476,7 +3572,8 @@
    "radiomics",
    "total knee replacement"
   ],
-  "doi": "10.1097/JS9.0000000000004427"
+  "doi": "10.1097/JS9.0000000000004427",
+  "citations": 0
  },
  {
   "pmid": "41479879",
@@ -3516,7 +3613,8 @@
    "patellar instability",
    "patient-reported outcome"
   ],
-  "doi": "10.1177/23259671251362675"
+  "doi": "10.1177/23259671251362675",
+  "citations": 2
  },
  {
   "pmid": "41554820",
@@ -3553,7 +3651,8 @@
    "Total knee arthroplasty",
    "Unicompartmental knee arthroplasty"
   ],
-  "doi": "10.1038/s41598-026-36186-x"
+  "doi": "10.1038/s41598-026-36186-x",
+  "citations": 0
  },
  {
   "pmid": "41685951",
@@ -3596,7 +3695,8 @@
    "Wearable Electronic Devices"
   ],
   "keywords": [],
-  "doi": "10.1002/acr.80018"
+  "doi": "10.1002/acr.80018",
+  "citations": 0
  },
  {
   "pmid": "41865475",
@@ -3632,7 +3732,8 @@
    "Patient Education",
    "Personalized Medicine"
   ],
-  "doi": "10.1016/j.ijmedinf.2026.106409"
+  "doi": "10.1016/j.ijmedinf.2026.106409",
+  "citations": 0
  },
  {
   "pmid": "42149217",
@@ -3664,7 +3765,8 @@
    "Neovascularization",
    "Transarterial microembolization (TAME)"
   ],
-  "doi": "10.1007/s00256-026-05249-5"
+  "doi": "10.1007/s00256-026-05249-5",
+  "citations": 0
  },
  {
   "pmid": "42179107",
@@ -3703,7 +3805,8 @@
    "radiomics",
    "viscosupplementation"
   ],
-  "doi": "10.1111/nyas.70288"
+  "doi": "10.1111/nyas.70288",
+  "citations": 0
  },
  {
   "pmid": "42221077",
@@ -3732,7 +3835,8 @@
    "medial tibial plateau depth",
    "medial tibial slope"
   ],
-  "doi": "10.3389/fmed.2026.1819067"
+  "doi": "10.3389/fmed.2026.1819067",
+  "citations": 0
  },
  {
   "pmid": "42232684",
@@ -3789,7 +3893,8 @@
    "Magnetic resonance imaging",
    "Randomised controlled trial"
   ],
-  "doi": "10.1016/j.eclinm.2026.103982"
+  "doi": "10.1016/j.eclinm.2026.103982",
+  "citations": 1
  },
  {
   "pmid": "42253297",
@@ -3817,7 +3922,8 @@
    "patellar retinacular lesions",
    "patellofemoral joint"
   ],
-  "doi": "10.3389/frai.2026.1808422"
+  "doi": "10.3389/frai.2026.1808422",
+  "citations": 0
  },
  {
   "pmid": "42302108",
@@ -3857,7 +3963,8 @@
    "Power spectrum",
    "SHAP"
   ],
-  "doi": "10.1097/j.pain.0000000000004033"
+  "doi": "10.1097/j.pain.0000000000004033",
+  "citations": 0
  },
  {
   "pmid": "42331136",
@@ -3899,7 +4006,8 @@
    "Osteoarthritis",
    "Synovitis"
   ],
-  "doi": "10.1016/j.joca.2026.06.007"
+  "doi": "10.1016/j.joca.2026.06.007",
+  "citations": 1
  },
  {
   "pmid": "42344276",
@@ -3927,7 +4035,8 @@
    "meniscal damage",
    "radiography"
   ],
-  "doi": "10.3389/fphys.2026.1858407"
+  "doi": "10.3389/fphys.2026.1858407",
+  "citations": 0
  },
  {
   "pmid": "42367196",
@@ -3958,7 +4067,8 @@
    "MRI",
    "Machine learning"
   ],
-  "doi": "10.1016/j.ocarto.2026.100832"
+  "doi": "10.1016/j.ocarto.2026.100832",
+  "citations": 0
  },
  {
   "pmid": "42383283",
@@ -3985,7 +4095,8 @@
    "MRI",
    "Osteoarthritis"
   ],
-  "doi": "10.1016/j.ocarto.2026.100842"
+  "doi": "10.1016/j.ocarto.2026.100842",
+  "citations": 0
  },
  {
   "pmid": "42433608",
@@ -4016,7 +4127,8 @@
   "year": 2026,
   "mesh": [],
   "keywords": [],
-  "doi": "10.1016/j.ostima.2025.100377"
+  "doi": "10.1016/j.ostima.2025.100377",
+  "citations": 0
  },
  {
   "pmid": "42437108",
@@ -4047,7 +4159,8 @@
    "Osteoarthritis",
    "Synovitis"
   ],
-  "doi": "10.1016/j.ocarto.2026.100847"
+  "doi": "10.1016/j.ocarto.2026.100847",
+  "citations": 0
  },
  {
   "pmid": "42525074",
@@ -4091,7 +4204,8 @@
    "Musculoskeletal imaging",
    "Osteoarthritis"
   ],
-  "doi": "10.1007/s00256-026-05309-w"
+  "doi": "10.1007/s00256-026-05309-w",
+  "citations": 0
  },
  {
   "pmid": "42545888",
@@ -4116,7 +4230,8 @@
    "medical imaging",
    "prediction models"
   ],
-  "doi": "10.1002/ksa.70555"
+  "doi": "10.1002/ksa.70555",
+  "citations": 0
  },
  {
   "pmid": "42580074",
@@ -4169,7 +4284,8 @@
    "Pain",
    "Radiomics"
   ],
-  "doi": "10.1016/j.ejrad.2026.113153"
+  "doi": "10.1016/j.ejrad.2026.113153",
+  "citations": 0
  },
  {
   "pmid": "42594606",
@@ -4216,7 +4332,8 @@
    "Knee imaging",
    "Low-field MRI"
   ],
-  "doi": "10.1016/j.ejrad.2026.113163"
+  "doi": "10.1016/j.ejrad.2026.113163",
+  "citations": 0
  },
  {
   "pmid": "42633186",
@@ -4244,7 +4361,8 @@
    "Muscles",
    "Osteoarthritis"
   ],
-  "doi": "10.1016/j.ocarto.2026.100858"
+  "doi": "10.1016/j.ocarto.2026.100858",
+  "citations": 0
  },
  {
   "pmid": "42793742",
@@ -4269,6 +4387,7 @@
    "knee",
    "subtle"
   ],
-  "doi": "10.3390/diagnostics16182957"
+  "doi": "10.3390/diagnostics16182957",
+  "citations": 0
  }
 ]

@@ -30,7 +30,8 @@
    "Tomography, Spiral Computed"
   ],
   "keywords": [],
-  "doi": "10.1109/TMI.2005.852048"
+  "doi": "10.1109/TMI.2005.852048",
+  "citations": 91
  },
  {
   "pmid": "20395163",
@@ -61,7 +62,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1016/j.media.2010.03.004"
+  "doi": "10.1016/j.media.2010.03.004",
+  "citations": 67
  },
  {
   "pmid": "29594181",
@@ -87,7 +89,8 @@
    "radiomics",
    "transfer learning"
   ],
-  "doi": "10.1117/1.JMI.5.1.011021"
+  "doi": "10.1117/1.JMI.5.1.011021",
+  "citations": 67
  },
  {
   "pmid": "29713615",
@@ -115,7 +118,8 @@
    "lung nodules",
    "reinforcement learning"
   ],
-  "doi": "10.3389/fonc.2018.00108"
+  "doi": "10.3389/fonc.2018.00108",
+  "citations": 45
  },
  {
   "pmid": "30443438",
@@ -141,7 +145,8 @@
    "Radiomics",
    "Transfer learning"
   ],
-  "doi": "10.1109/IJCNN.2018.8489345"
+  "doi": "10.1109/IJCNN.2018.8489345",
+  "citations": 26
  },
  {
   "pmid": "31110349",
@@ -180,7 +185,8 @@
    "United States"
   ],
   "keywords": [],
-  "doi": "10.1038/s41591-019-0447-x"
+  "doi": "10.1038/s41591-019-0447-x",
+  "citations": 1133
  },
  {
   "pmid": "31185463",
@@ -203,7 +209,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1088/1361-6560/ab28a1"
+  "doi": "10.1088/1361-6560/ab28a1",
+  "citations": 22
  },
  {
   "pmid": "31307017",
@@ -238,7 +245,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1088/1361-6560/ab326a"
+  "doi": "10.1088/1361-6560/ab326a",
+  "citations": 38
  },
  {
   "pmid": "31558626",
@@ -295,7 +303,8 @@
   "keywords": [
    "Lung Cancer"
   ],
-  "doi": "10.1136/thoraxjnl-2018-212812"
+  "doi": "10.1136/thoraxjnl-2018-212812",
+  "citations": 74
  },
  {
   "pmid": "31675322",
@@ -318,7 +327,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1109/TMI.2019.2947595"
+  "doi": "10.1109/TMI.2019.2947595",
+  "citations": 81
  },
  {
   "pmid": "31747155",
@@ -355,7 +365,8 @@
    "patient routing",
    "сancer screening"
   ],
-  "doi": "10.32687/0869-866X-2019-27-si1-630-636"
+  "doi": "10.32687/0869-866X-2019-27-si1-630-636",
+  "citations": 5
  },
  {
   "pmid": "31825348",
@@ -396,7 +407,8 @@
    "neural network",
    "thorax"
   ],
-  "doi": "10.17116/hirurgia201912191"
+  "doi": "10.17116/hirurgia201912191",
+  "citations": 1
  },
  {
   "pmid": "31947269",
@@ -423,7 +435,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1109/EMBC.2019.8857180"
+  "doi": "10.1109/EMBC.2019.8857180",
+  "citations": 10
  },
  {
   "pmid": "32027538",
@@ -471,7 +484,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1200/CCI.19.00099"
+  "doi": "10.1200/CCI.19.00099",
+  "citations": 14
  },
  {
   "pmid": "32055950",
@@ -520,7 +534,8 @@
    "Machine learning",
    "Tomography, X-ray computed"
   ],
-  "doi": "10.1007/s00330-019-06630-w"
+  "doi": "10.1007/s00330-019-06630-w",
+  "citations": 29
  },
  {
   "pmid": "32520848",
@@ -551,7 +566,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1097/RTI.0000000000000538"
+  "doi": "10.1097/RTI.0000000000000538",
+  "citations": 39
  },
  {
   "pmid": "32729277",
@@ -592,7 +608,8 @@
    "Lung",
    "Multidetector computed tomography"
   ],
-  "doi": "10.3348/kjr.2020.0116"
+  "doi": "10.3348/kjr.2020.0116",
+  "citations": 111
  },
  {
   "pmid": "32784681",
@@ -620,7 +637,8 @@
    "lung cancer screening",
    "vessel suppression"
   ],
-  "doi": "10.3390/cancers12082211"
+  "doi": "10.3390/cancers12082211",
+  "citations": 33
  },
  {
   "pmid": "32788705",
@@ -658,7 +676,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1038/s41598-020-70629-3"
+  "doi": "10.1038/s41598-020-70629-3",
+  "citations": 63
  },
  {
   "pmid": "32831492",
@@ -680,7 +699,8 @@
    "lung segmentation",
    "pulmonary nodule detection"
   ],
-  "doi": "10.4103/jmp.JMP_101_19"
+  "doi": "10.4103/jmp.JMP_101_19",
+  "citations": 9
  },
  {
   "pmid": "32864596",
@@ -735,7 +755,8 @@
    "time-dependent ROC",
    "volume doubling time"
   ],
-  "doi": "10.1016/S2589-7500(19)30159-1"
+  "doi": "10.1016/S2589-7500(19)30159-1",
+  "citations": 97
  },
  {
   "pmid": "32991288",
@@ -765,7 +786,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1109/TCBB.2020.3027744"
+  "doi": "10.1109/TCBB.2020.3027744",
+  "citations": 9
  },
  {
   "pmid": "33240975",
@@ -791,7 +813,8 @@
    "lung nodule (LN) detection",
    "malignancy identification"
   ],
-  "doi": "10.21037/atm-20-4461"
+  "doi": "10.21037/atm-20-4461",
+  "citations": 14
  },
  {
   "pmid": "33250956",
@@ -811,7 +834,8 @@
    "lung nodule detection",
    "squeeze-and-excitation"
   ],
-  "doi": "10.1109/ISBI45749.2020.9098317"
+  "doi": "10.1109/ISBI45749.2020.9098317",
+  "citations": 39
  },
  {
   "pmid": "33328058",
@@ -855,7 +879,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1016/S2589-7500(20)30064-9"
+  "doi": "10.1016/S2589-7500(20)30064-9",
+  "citations": 66
  },
  {
   "pmid": "33482120",
@@ -892,7 +917,8 @@
    "lung cancer screening",
    "lung nodule"
   ],
-  "doi": "10.1016/j.jacr.2020.11.014"
+  "doi": "10.1016/j.jacr.2020.11.014",
+  "citations": 37
  },
  {
   "pmid": "33502624",
@@ -920,7 +946,8 @@
    "Learning rate",
    "Lung cancer detection"
   ],
-  "doi": "10.1007/s00418-020-01961-y"
+  "doi": "10.1007/s00418-020-01961-y",
+  "citations": 4
  },
  {
   "pmid": "33658025",
@@ -970,7 +997,8 @@
    "Deep learning",
    "Lung cancer screening"
   ],
-  "doi": "10.1186/s12916-021-01928-3"
+  "doi": "10.1186/s12916-021-01928-3",
+  "citations": 110
  },
  {
   "pmid": "33708918",
@@ -998,7 +1026,8 @@
    "deep learning",
    "neural networks (computer)"
   ],
-  "doi": "10.21037/atm-20-5060"
+  "doi": "10.21037/atm-20-5060",
+  "citations": 10
  },
  {
   "pmid": "33740739",
@@ -1052,7 +1081,8 @@
    "Lung cancer",
    "Pulmonary nodules"
   ],
-  "doi": "10.1016/j.media.2021.102027"
+  "doi": "10.1016/j.media.2021.102027",
+  "citations": 20
  },
  {
   "pmid": "33816155",
@@ -1079,7 +1109,8 @@
    "pulmonary cancer",
    "pulmonary nodule"
   ],
-  "doi": "10.21037/qims-20-630"
+  "doi": "10.21037/qims-20-630",
+  "citations": 28
  },
  {
   "pmid": "33895622",
@@ -1120,7 +1151,8 @@
    "Low-dose computed tomography screening",
    "Lung cancer screening"
   ],
-  "doi": "10.1016/j.compmedimag.2021.101883"
+  "doi": "10.1016/j.compmedimag.2021.101883",
+  "citations": 28
  },
  {
   "pmid": "34017001",
@@ -1167,7 +1199,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1038/s41467-021-23235-4"
+  "doi": "10.1038/s41467-021-23235-4",
+  "citations": 59
  },
  {
   "pmid": "34264825",
@@ -1218,7 +1251,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1109/TMI.2021.3097665"
+  "doi": "10.1109/TMI.2021.3097665",
+  "citations": 14
  },
  {
   "pmid": "34478913",
@@ -1253,7 +1287,8 @@
    "Pulmonary nodule",
    "Radiology analysis"
   ],
-  "doi": "10.1016/j.cmpb.2021.106363"
+  "doi": "10.1016/j.cmpb.2021.106363",
+  "citations": 11
  },
  {
   "pmid": "34502160",
@@ -1302,7 +1337,8 @@
    "non-small-cell lung carcinoma",
    "radiogenomics"
   ],
-  "doi": "10.3390/ijms22179254"
+  "doi": "10.3390/ijms22179254",
+  "citations": 114
  },
  {
   "pmid": "34530212",
@@ -1334,7 +1370,8 @@
    "Deep learning",
    "Lung cancer screening"
   ],
-  "doi": "10.1016/j.ejmp.2021.08.011"
+  "doi": "10.1016/j.ejmp.2021.08.011",
+  "citations": 5
  },
  {
   "pmid": "34870218",
@@ -1372,7 +1409,8 @@
    "Screening",
    "Thorax"
   ],
-  "doi": "10.1148/ryai.2021210027"
+  "doi": "10.1148/ryai.2021210027",
+  "citations": 36
  },
  {
   "pmid": "34871936",
@@ -1420,7 +1458,8 @@
    "Early detection of cancer",
    "Pulmonary nodules"
   ],
-  "doi": "10.1016/j.ejrad.2021.110068"
+  "doi": "10.1016/j.ejrad.2021.110068",
+  "citations": 25
  },
  {
   "pmid": "34969636",
@@ -1479,7 +1518,8 @@
    "Lung cancer screening",
    "Major adverse cardiac and cerebrovascular events"
   ],
-  "doi": "10.1016/j.jcct.2021.12.005"
+  "doi": "10.1016/j.jcct.2021.12.005",
+  "citations": 18
  },
  {
   "pmid": "35108060",
@@ -1522,7 +1562,8 @@
    "Spectrometry, Mass, Matrix-Assisted Laser Desorption-Ionization"
   ],
   "keywords": [],
-  "doi": "10.1126/scitranslmed.abk2756"
+  "doi": "10.1126/scitranslmed.abk2756",
+  "citations": 180
  },
  {
   "pmid": "35123156",
@@ -1556,7 +1597,8 @@
    "Screening",
    "Ultra LDCT"
   ],
-  "doi": "10.1016/j.lungcan.2022.01.002"
+  "doi": "10.1016/j.lungcan.2022.01.002",
+  "citations": 39
  },
  {
   "pmid": "35131147",
@@ -1588,7 +1630,8 @@
    "lung cancer screening",
    "z-axis scanning range"
   ],
-  "doi": "10.1016/j.acra.2021.12.001"
+  "doi": "10.1016/j.acra.2021.12.001",
+  "citations": 11
  },
  {
   "pmid": "35182291",
@@ -1624,7 +1667,8 @@
    "Minimum intensity projection",
    "Tomography"
   ],
-  "doi": "10.1007/s10278-022-00599-7"
+  "doi": "10.1007/s10278-022-00599-7",
+  "citations": 5
  },
  {
   "pmid": "35311112",
@@ -1673,7 +1717,8 @@
    "lung cancer",
    "prediction model"
   ],
-  "doi": "10.3389/fonc.2022.853801"
+  "doi": "10.3389/fonc.2022.853801",
+  "citations": 29
  },
  {
   "pmid": "35330417",
@@ -1700,7 +1745,8 @@
    "medical informatics",
    "natural language processing"
   ],
-  "doi": "10.3390/jpm12030417"
+  "doi": "10.3390/jpm12030417",
+  "citations": 2
  },
  {
   "pmid": "35406501",
@@ -1723,7 +1769,8 @@
    "deep learning",
    "lung cancer screening"
   ],
-  "doi": "10.3390/cancers14071729"
+  "doi": "10.3390/cancers14071729",
+  "citations": 41
  },
  {
   "pmid": "35468494",
@@ -1753,7 +1800,8 @@
    "Image denoising",
    "Radiomics"
   ],
-  "doi": "10.1016/j.ejmp.2022.04.008"
+  "doi": "10.1016/j.ejmp.2022.04.008",
+  "citations": 9
  },
  {
   "pmid": "35484439",
@@ -1782,7 +1830,8 @@
    "Occlusion-based saliency maps",
    "Radiologists"
   ],
-  "doi": "10.1007/s10278-022-00631-w"
+  "doi": "10.1007/s10278-022-00631-w",
+  "citations": 8
  },
  {
   "pmid": "35699582",
@@ -1814,7 +1863,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.212877"
+  "doi": "10.1148/radiol.212877",
+  "citations": 24
  },
  {
   "pmid": "35866406",
@@ -1855,7 +1905,8 @@
    "malignancy risk",
    "pulmonary nodules"
   ],
-  "doi": "10.31083/j.fbl2707212"
+  "doi": "10.31083/j.fbl2707212",
+  "citations": 23
  },
  {
   "pmid": "36077686",
@@ -1899,7 +1950,8 @@
    "postoperative-stage IA NSCLC",
    "tumor grade"
   ],
-  "doi": "10.3390/cancers14174150"
+  "doi": "10.3390/cancers14174150",
+  "citations": 12
  },
  {
   "pmid": "36174098",
@@ -1926,7 +1978,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1371/journal.pone.0275531"
+  "doi": "10.1371/journal.pone.0275531",
+  "citations": 5
  },
  {
   "pmid": "36210060",
@@ -1964,7 +2017,8 @@
    "image noises",
    "low-dose chest CT"
   ],
-  "doi": "10.1002/acm2.13796"
+  "doi": "10.1002/acm2.13796",
+  "citations": 13
  },
  {
   "pmid": "36291800",
@@ -1993,7 +2047,8 @@
    "lung cancer",
    "pulmonary nodule"
   ],
-  "doi": "10.3390/cancers14205016"
+  "doi": "10.3390/cancers14205016",
+  "citations": 15
  },
  {
   "pmid": "36292249",
@@ -2017,7 +2072,8 @@
    "low-dose computed tomography",
    "lung"
   ],
-  "doi": "10.3390/diagnostics12102560"
+  "doi": "10.3390/diagnostics12102560",
+  "citations": 15
  },
  {
   "pmid": "36434060",
@@ -2042,7 +2098,8 @@
    "Thorax"
   ],
   "keywords": [],
-  "doi": "10.1038/s41598-022-24900-4"
+  "doi": "10.1038/s41598-022-24900-4",
+  "citations": 9
  },
  {
   "pmid": "36438275",
@@ -2075,7 +2132,8 @@
    "low-dose",
    "lung cancer"
   ],
-  "doi": "10.3389/fpubh.2022.1047714"
+  "doi": "10.3389/fpubh.2022.1047714",
+  "citations": 2
  },
  {
   "pmid": "36600392",
@@ -2113,7 +2171,8 @@
    "Diagnostic radiology",
    "Respiratory tract tumours"
   ],
-  "doi": "10.1136/bmjopen-2022-067263"
+  "doi": "10.1136/bmjopen-2022-067263",
+  "citations": 23
  },
  {
   "pmid": "36601453",
@@ -2142,7 +2201,8 @@
    "Segmentation",
    "Thorax"
   ],
-  "doi": "10.1148/ryct.210311"
+  "doi": "10.1148/ryct.210311",
+  "citations": 9
  },
  {
   "pmid": "36620580",
@@ -2166,7 +2226,8 @@
    "pulmonary ground-glass opacity",
    "visualization"
   ],
-  "doi": "10.3389/fonc.2022.1075350"
+  "doi": "10.3389/fonc.2022.1075350",
+  "citations": 0
  },
  {
   "pmid": "36634294",
@@ -2204,7 +2265,8 @@
    "Mass Screening"
   ],
   "keywords": [],
-  "doi": "10.1200/JCO.22.01345"
+  "doi": "10.1200/JCO.22.01345",
+  "citations": 207
  },
  {
   "pmid": "36656144",
@@ -2237,7 +2299,8 @@
    "Coronary Artery Disease"
   ],
   "keywords": [],
-  "doi": "10.1097/RTI.0000000000000698"
+  "doi": "10.1097/RTI.0000000000000698",
+  "citations": 20
  },
  {
   "pmid": "36672655",
@@ -2264,7 +2327,8 @@
    "computer-assisted detection",
    "lung nodule"
   ],
-  "doi": "10.3390/biomedicines11010147"
+  "doi": "10.3390/biomedicines11010147",
+  "citations": 17
  },
  {
   "pmid": "36681685",
@@ -2292,7 +2356,8 @@
    "Emphysema"
   ],
   "keywords": [],
-  "doi": "10.1038/s41598-023-27549-9"
+  "doi": "10.1038/s41598-023-27549-9",
+  "citations": 6
  },
  {
   "pmid": "36719495",
@@ -2325,7 +2390,8 @@
    "Osteoporosis",
    "Radiomics"
   ],
-  "doi": "10.1007/s00330-023-09421-6"
+  "doi": "10.1007/s00330-023-09421-6",
+  "citations": 37
  },
  {
   "pmid": "36909593",
@@ -2347,7 +2413,8 @@
    "deep learning",
    "machine learning"
   ],
-  "doi": "10.1101/2023.03.01.23286632"
+  "doi": "10.1101/2023.03.01.23286632",
+  "citations": 2
  },
  {
   "pmid": "37019699",
@@ -2384,7 +2451,8 @@
    "Lung cancer screening",
    "Ultra-low dose CT"
   ],
-  "doi": "10.1016/j.acra.2023.02.019"
+  "doi": "10.1016/j.acra.2023.02.019",
+  "citations": 17
  },
  {
   "pmid": "37192186",
@@ -2416,7 +2484,8 @@
    "Vascular Calcification"
   ],
   "keywords": [],
-  "doi": "10.1371/journal.pone.0285593"
+  "doi": "10.1371/journal.pone.0285593",
+  "citations": 15
  },
  {
   "pmid": "37489991",
@@ -2451,7 +2520,8 @@
    "Lung"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.222937"
+  "doi": "10.1148/radiol.222937",
+  "citations": 57
  },
  {
   "pmid": "37526548",
@@ -2485,7 +2555,8 @@
    "Tomography, X-Ray Computed"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.223308"
+  "doi": "10.1148/radiol.223308",
+  "citations": 34
  },
  {
   "pmid": "37642722",
@@ -2520,7 +2591,8 @@
    "Primary lung cancer",
    "Radiomics"
   ],
-  "doi": "10.1007/s00432-023-05329-2"
+  "doi": "10.1007/s00432-023-05329-2",
+  "citations": 18
  },
  {
   "pmid": "37801898",
@@ -2557,7 +2629,8 @@
    "Low-dose computed tomography",
    "Lung cancer screening"
   ],
-  "doi": "10.1016/j.lungcan.2023.107387"
+  "doi": "10.1016/j.lungcan.2023.107387",
+  "citations": 10
  },
  {
   "pmid": "37806740",
@@ -2590,7 +2663,8 @@
    "Prevention",
    "Screening"
   ],
-  "doi": "10.1016/j.thorsurg.2023.04.017"
+  "doi": "10.1016/j.thorsurg.2023.04.017",
+  "citations": 7
  },
  {
   "pmid": "37870625",
@@ -2638,7 +2712,8 @@
    "Lung neoplasms",
    "Radiation dosage"
   ],
-  "doi": "10.1007/s00330-023-10348-1"
+  "doi": "10.1007/s00330-023-10348-1",
+  "citations": 9
  },
  {
   "pmid": "37969955",
@@ -2667,7 +2742,8 @@
    "prostaglandin E receptor 4",
    "short stature homeobox 2"
   ],
-  "doi": "10.21147/j.issn.1000-9604.2023.05.08"
+  "doi": "10.21147/j.issn.1000-9604.2023.05.08",
+  "citations": 15
  },
  {
   "pmid": "38042167",
@@ -2740,7 +2816,8 @@
    "Mass Screening"
   ],
   "keywords": [],
-  "doi": "10.1016/S2213-2600(23)00338-7"
+  "doi": "10.1016/S2213-2600(23)00338-7",
+  "citations": 178
  },
  {
   "pmid": "38106099",
@@ -2768,7 +2845,8 @@
    "skeletal muscle",
    "thorax"
   ],
-  "doi": "10.1101/2023.12.05.23299258"
+  "doi": "10.1101/2023.12.05.23299258",
+  "citations": 0
  },
  {
   "pmid": "38214839",
@@ -2808,7 +2886,8 @@
    "Radiomics",
    "Tumor metastasis"
   ],
-  "doi": "10.1007/s11547-024-01770-6"
+  "doi": "10.1007/s11547-024-01770-6",
+  "citations": 7
  },
  {
   "pmid": "38223072",
@@ -2835,7 +2914,8 @@
    "attention mechanism",
    "structure-unaligned image"
   ],
-  "doi": "10.21037/qims-23-403"
+  "doi": "10.21037/qims-23-403",
+  "citations": 2
  },
  {
   "pmid": "38355174",
@@ -2870,7 +2950,8 @@
    "ONCOLOGY",
    "Respiratory tract tumours"
   ],
-  "doi": "10.1136/bmjopen-2023-074680"
+  "doi": "10.1136/bmjopen-2023-074680",
+  "citations": 9
  },
  {
   "pmid": "38436233",
@@ -2911,7 +2992,8 @@
    "mobile CT unit",
    "telemedicine"
   ],
-  "doi": "10.1089/tmj.2023.0648"
+  "doi": "10.1089/tmj.2023.0648",
+  "citations": 15
  },
  {
   "pmid": "38509635",
@@ -2948,7 +3030,8 @@
    "Ground glass nodules",
    "LUNA16 dataset"
   ],
-  "doi": "10.1186/s40644-024-00683-x"
+  "doi": "10.1186/s40644-024-00683-x",
+  "citations": 3
  },
  {
   "pmid": "38530135",
@@ -2978,7 +3061,8 @@
    "generative adversarial networks",
    "lung cancer"
   ],
-  "doi": "10.1002/mp.17028"
+  "doi": "10.1002/mp.17028",
+  "citations": 8
  },
  {
   "pmid": "38569236",
@@ -3011,7 +3095,8 @@
    "Lung nodule detection",
    "Weakly supervised learning"
   ],
-  "doi": "10.1016/j.compbiomed.2024.108361"
+  "doi": "10.1016/j.compbiomed.2024.108361",
+  "citations": 3
  },
  {
   "pmid": "38589197",
@@ -3044,7 +3129,8 @@
    "Imaging/CT MRI etc",
    "Thoracic Surgery"
   ],
-  "doi": "10.1136/bmjresp-2023-002249"
+  "doi": "10.1136/bmjresp-2023-002249",
+  "citations": 2
  },
  {
   "pmid": "38593627",
@@ -3081,7 +3167,8 @@
    "Nodule morphology",
    "Pulmonary nodules"
   ],
-  "doi": "10.1016/j.ejmp.2024.103344"
+  "doi": "10.1016/j.ejmp.2024.103344",
+  "citations": 6
  },
  {
   "pmid": "38720391",
@@ -3126,7 +3213,8 @@
    "Nodule morphology",
    "Nodule volumetry"
   ],
-  "doi": "10.1186/s40644-024-00703-w"
+  "doi": "10.1186/s40644-024-00703-w",
+  "citations": 10
  },
  {
   "pmid": "38772915",
@@ -3154,7 +3242,8 @@
    "Prevention",
    "Screening"
   ],
-  "doi": "10.1007/s00117-024-01322-z"
+  "doi": "10.1007/s00117-024-01322-z",
+  "citations": 0
  },
  {
   "pmid": "38848168",
@@ -3188,7 +3277,8 @@
    "feature attribution",
    "low-dose computed tomography"
   ],
-  "doi": "10.3233/CBM-230444"
+  "doi": "10.3233/CBM-230444",
+  "citations": 1
  },
  {
   "pmid": "38927934",
@@ -3215,7 +3305,8 @@
    "lung cancer",
    "nodule growth prediction"
   ],
-  "doi": "10.3390/cancers16122229"
+  "doi": "10.3390/cancers16122229",
+  "citations": 10
  },
  {
   "pmid": "38988991",
@@ -3239,7 +3330,8 @@
    "transfer learning",
    "you only look once"
   ],
-  "doi": "10.1117/1.JMI.11.4.044502"
+  "doi": "10.1117/1.JMI.11.4.044502",
+  "citations": 0
  },
  {
   "pmid": "39017691",
@@ -3280,7 +3372,8 @@
    "Vertebral height ratio",
    "Vertebral morphology"
   ],
-  "doi": "10.1007/s00223-024-01255-8"
+  "doi": "10.1007/s00223-024-01255-8",
+  "citations": 2
  },
  {
   "pmid": "39053365",
@@ -3320,7 +3413,8 @@
    "Prediction",
    "Smoking"
   ],
-  "doi": "10.1016/j.canep.2024.102631"
+  "doi": "10.1016/j.canep.2024.102631",
+  "citations": 9
  },
  {
   "pmid": "39165498",
@@ -3362,7 +3456,8 @@
    "Methylation",
    "Pulmonary nodules"
   ],
-  "doi": "10.1016/j.eclinm.2024.102769"
+  "doi": "10.1016/j.eclinm.2024.102769",
+  "citations": 22
  },
  {
   "pmid": "39267479",
@@ -3401,7 +3496,8 @@
    "lung cancer",
    "screening"
   ],
-  "doi": "10.1097/RTI.0000000000000813"
+  "doi": "10.1097/RTI.0000000000000813",
+  "citations": 0
  },
  {
   "pmid": "39278738",
@@ -3446,7 +3542,8 @@
    "Metabolic profiling",
    "Ultra-low dose computed tomography"
   ],
-  "doi": "10.1016/j.numecd.2024.07.013"
+  "doi": "10.1016/j.numecd.2024.07.013",
+  "citations": 3
  },
  {
   "pmid": "39437009",
@@ -3486,7 +3583,8 @@
    "early detection of cancer",
    "lung cancer"
   ],
-  "doi": "10.1097/RLI.0000000000001131"
+  "doi": "10.1097/RLI.0000000000001131",
+  "citations": 2
  },
  {
   "pmid": "39484267",
@@ -3508,7 +3606,8 @@
   "year": 2024,
   "mesh": [],
   "keywords": [],
-  "doi": "10.1101/2024.10.14.24315477"
+  "doi": "10.1101/2024.10.14.24315477",
+  "citations": 0
  },
  {
   "pmid": "39613978",
@@ -3550,7 +3649,8 @@
    "Lung cancer screening",
    "Lung nodule"
   ],
-  "doi": "10.1007/s11604-024-01704-2"
+  "doi": "10.1007/s11604-024-01704-2",
+  "citations": 7
  },
  {
   "pmid": "39709114",
@@ -3603,7 +3703,8 @@
    "Lung cancer risk assessment",
    "Lung cancer screening"
   ],
-  "doi": "10.1016/j.jtho.2024.12.016"
+  "doi": "10.1016/j.jtho.2024.12.016",
+  "citations": 19
  },
  {
   "pmid": "39721356",
@@ -3648,7 +3749,8 @@
    "Subgroup analysis",
    "Time-to-event"
   ],
-  "doi": "10.1016/j.artmed.2024.103055"
+  "doi": "10.1016/j.artmed.2024.103055",
+  "citations": 5
  },
  {
   "pmid": "39754864",
@@ -3698,7 +3800,8 @@
    "Tomography, X-Ray Computed*",
    "Workload"
   ],
-  "doi": "10.1016/j.ejca.2024.115214"
+  "doi": "10.1016/j.ejca.2024.115214",
+  "citations": 18
  },
  {
   "pmid": "39792163",
@@ -3739,7 +3842,8 @@
    "Pulmonary nodule",
    "Tomography (X-ray computed)"
   ],
-  "doi": "10.1007/s00330-024-11317-y"
+  "doi": "10.1007/s00330-024-11317-y",
+  "citations": 3
  },
  {
   "pmid": "39818952",
@@ -3781,7 +3885,8 @@
    "Natural Language Processing"
   ],
   "keywords": [],
-  "doi": "10.1200/CCI.24.00139"
+  "doi": "10.1200/CCI.24.00139",
+  "citations": 2
  },
  {
   "pmid": "39850777",
@@ -3809,7 +3914,8 @@
    "Coronary artery disease",
    "Risk categorization"
   ],
-  "doi": "10.1016/j.ijcha.2024.101593"
+  "doi": "10.1016/j.ijcha.2024.101593",
+  "citations": 8
  },
  {
   "pmid": "39907586",
@@ -3861,7 +3967,8 @@
    "Diagnosis",
    "Lung"
   ],
-  "doi": "10.1148/ryai.230506"
+  "doi": "10.1148/ryai.230506",
+  "citations": 11
  },
  {
   "pmid": "39964263",
@@ -3896,7 +4003,8 @@
    "Epicardial Adipose Tissue"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.240473"
+  "doi": "10.1148/radiol.240473",
+  "citations": 13
  },
  {
   "pmid": "40001094",
@@ -3938,7 +4046,8 @@
    "High-risk population",
    "Lung cancer"
   ],
-  "doi": "10.1186/s12885-025-13710-2"
+  "doi": "10.1186/s12885-025-13710-2",
+  "citations": 18
  },
  {
   "pmid": "40068175",
@@ -3994,7 +4103,8 @@
    "screening uptake",
    "search data"
   ],
-  "doi": "10.2196/53328"
+  "doi": "10.2196/53328",
+  "citations": 0
  },
  {
   "pmid": "40082126",
@@ -4038,7 +4148,8 @@
    "Convolutional neural network",
    "Osteoporosis"
   ],
-  "doi": "10.1016/j.acra.2025.02.041"
+  "doi": "10.1016/j.acra.2025.02.041",
+  "citations": 8
  },
  {
   "pmid": "40090067",
@@ -4077,7 +4188,8 @@
    "LLMs",
    "LungRADS"
   ],
-  "doi": "10.1016/j.clinimag.2025.110455"
+  "doi": "10.1016/j.clinimag.2025.110455",
+  "citations": 9
  },
  {
   "pmid": "40121609",
@@ -4105,7 +4217,8 @@
    "Lung reporting and data system",
    "Tomography (X-Ray computed)"
   ],
-  "doi": "10.1186/s13244-025-01937-3"
+  "doi": "10.1186/s13244-025-01937-3",
+  "citations": 4
  },
  {
   "pmid": "40208581",
@@ -4147,7 +4260,8 @@
    "pulmonary fibrosis",
    "quantitative imaging"
   ],
-  "doi": "10.1513/AnnalsATS.202410-1048OC"
+  "doi": "10.1513/AnnalsATS.202410-1048OC",
+  "citations": 4
  },
  {
   "pmid": "40210477",
@@ -4193,7 +4307,8 @@
    "Postoperative management",
    "Quality of life"
   ],
-  "doi": "10.3779/j.issn.1009-3419.2025.102.11"
+  "doi": "10.3779/j.issn.1009-3419.2025.102.11",
+  "citations": 3
  },
  {
   "pmid": "40213646",
@@ -4236,7 +4351,8 @@
    "non-high risk",
    "thin-section"
   ],
-  "doi": "10.1093/pcmedi/pbaf007"
+  "doi": "10.1093/pcmedi/pbaf007",
+  "citations": 8
  },
  {
   "pmid": "40223946",
@@ -4260,7 +4376,8 @@
    "lung cancer screening",
    "quantitative parameter"
   ],
-  "doi": "10.21037/jtd-24-1440"
+  "doi": "10.21037/jtd-24-1440",
+  "citations": 2
  },
  {
   "pmid": "40232605",
@@ -4295,7 +4412,8 @@
    "Low dose",
    "Lung cancer"
   ],
-  "doi": "10.1007/s11517-025-03358-2"
+  "doi": "10.1007/s11517-025-03358-2",
+  "citations": 0
  },
  {
   "pmid": "40237429",
@@ -4338,7 +4456,8 @@
    "lung cancer",
    "lung neoplasms"
   ],
-  "doi": "10.2214/AJR.25.32829"
+  "doi": "10.2214/AJR.25.32829",
+  "citations": 16
  },
  {
   "pmid": "40237601",
@@ -4364,7 +4483,8 @@
    "Oncology",
    "Thorax"
   ],
-  "doi": "10.1148/ryai.240248"
+  "doi": "10.1148/ryai.240248",
+  "citations": 4
  },
  {
   "pmid": "40334175",
@@ -4399,7 +4519,8 @@
    "Risk Factors"
   ],
   "keywords": [],
-  "doi": "10.1200/CCI-24-00291"
+  "doi": "10.1200/CCI-24-00291",
+  "citations": 5
  },
  {
   "pmid": "40483857",
@@ -4436,7 +4557,8 @@
    "Domain adaptation",
    "Low-dose chest computed tomography"
   ],
-  "doi": "10.1016/j.compbiomed.2025.110506"
+  "doi": "10.1016/j.compbiomed.2025.110506",
+  "citations": 1
  },
  {
   "pmid": "40600041",
@@ -4463,7 +4585,8 @@
    "machine learning",
    "prediction model"
   ],
-  "doi": "10.3389/fmed.2025.1577451"
+  "doi": "10.3389/fmed.2025.1577451",
+  "citations": 1
  },
  {
   "pmid": "40640822",
@@ -4510,7 +4633,8 @@
    "Non-small-cell lung cancer",
    "Radiomics"
   ],
-  "doi": "10.1186/s12890-025-03805-8"
+  "doi": "10.1186/s12890-025-03805-8",
+  "citations": 1
  },
  {
   "pmid": "40644803",
@@ -4556,7 +4680,8 @@
    "multiplexed immunosensors",
    "nanomaterials"
   ],
-  "doi": "10.1021/acsnano.5c02822"
+  "doi": "10.1021/acsnano.5c02822",
+  "citations": 16
  },
  {
   "pmid": "40722670",
@@ -4582,7 +4707,8 @@
    "pulmonary adenocarcinoma",
    "pure ground-glass nodule"
   ],
-  "doi": "10.3390/biomedicines13071600"
+  "doi": "10.3390/biomedicines13071600",
+  "citations": 4
  },
  {
   "pmid": "40762850",
@@ -4618,7 +4744,8 @@
    "Smoking"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.243393"
+  "doi": "10.1148/radiol.243393",
+  "citations": 5
  },
  {
   "pmid": "40781832",
@@ -4656,7 +4783,8 @@
    "anthropomorphic phantom",
    "lung imaging"
   ],
-  "doi": "10.1002/mp.17990"
+  "doi": "10.1002/mp.17990",
+  "citations": 2
  },
  {
   "pmid": "40833260",
@@ -4701,7 +4829,8 @@
    "Screening",
    "Supervised Learning"
   ],
-  "doi": "10.1148/ryai.240636"
+  "doi": "10.1148/ryai.240636",
+  "citations": 4
  },
  {
   "pmid": "40849438",
@@ -4727,7 +4856,8 @@
    "Diagnosis, Computer-Assisted"
   ],
   "keywords": [],
-  "doi": "10.1038/s41597-025-05742-x"
+  "doi": "10.1038/s41597-025-05742-x",
+  "citations": 1
  },
  {
   "pmid": "40883523",
@@ -4771,7 +4901,8 @@
    "Solitary pulmonary nodule",
    "X-ray computed tomography"
   ],
-  "doi": "10.1007/s00330-025-11949-8"
+  "doi": "10.1007/s00330-025-11949-8",
+  "citations": 3
  },
  {
   "pmid": "40956165",
@@ -4820,7 +4951,8 @@
    "Randomized Controlled Trials as Topic"
   ],
   "keywords": [],
-  "doi": "10.1148/radiol.250874"
+  "doi": "10.1148/radiol.250874",
+  "citations": 11
  },
  {
   "pmid": "41083099",
@@ -4857,7 +4989,8 @@
    "Radiographic Image Interpretation, Computer-Assisted"
   ],
   "keywords": [],
-  "doi": "10.1016/j.jbi.2025.104931"
+  "doi": "10.1016/j.jbi.2025.104931",
+  "citations": 3
  },
  {
   "pmid": "41132949",
@@ -4887,7 +5020,8 @@
    "subtype classification",
    "two-step approach"
   ],
-  "doi": "10.21037/tlcr-2025-317"
+  "doi": "10.21037/tlcr-2025-317",
+  "citations": 5
  },
  {
   "pmid": "41146384",
@@ -4925,7 +5059,8 @@
    "Epidemiology",
    "Pulmonary Disease, Chronic Obstructive"
   ],
-  "doi": "10.1136/bmjopen-2024-094268"
+  "doi": "10.1136/bmjopen-2024-094268",
+  "citations": 0
  },
  {
   "pmid": "41308576",
@@ -4966,7 +5101,8 @@
    "Low-dose computed tomography",
    "Lung cancer screening"
   ],
-  "doi": "10.1016/j.ejrad.2025.112561"
+  "doi": "10.1016/j.ejrad.2025.112561",
+  "citations": 4
  },
  {
   "pmid": "41315843",
@@ -5004,7 +5140,8 @@
    "Markov Chains"
   ],
   "keywords": [],
-  "doi": "10.1038/s41598-025-29600-3"
+  "doi": "10.1038/s41598-025-29600-3",
+  "citations": 0
  },
  {
   "pmid": "41319449",
@@ -5055,7 +5192,8 @@
    "Screening follow-up",
    "VDT"
   ],
-  "doi": "10.1016/j.ejca.2025.116137"
+  "doi": "10.1016/j.ejca.2025.116137",
+  "citations": 6
  },
  {
   "pmid": "41323119",
@@ -5102,7 +5240,8 @@
    "Pulmonary nodule",
    "Radiomics"
   ],
-  "doi": "10.1016/j.lanwpc.2025.101730"
+  "doi": "10.1016/j.lanwpc.2025.101730",
+  "citations": 8
  },
  {
   "pmid": "41419702",
@@ -5127,7 +5266,8 @@
    "RAD-DINO",
    "Self-supervised learning"
   ],
-  "doi": "10.1007/s10278-025-01748-4"
+  "doi": "10.1007/s10278-025-01748-4",
+  "citations": 2
  },
  {
   "pmid": "41579047",
@@ -5158,7 +5298,8 @@
    "low‐dose CT",
    "lung nodule detection"
   ],
-  "doi": "10.1002/acm2.70480"
+  "doi": "10.1002/acm2.70480",
+  "citations": 0
  },
  {
   "pmid": "41590236",
@@ -5183,7 +5324,8 @@
    "malignancy classification",
    "pulmonary nodule detection"
   ],
-  "doi": "10.3390/diseases14010021"
+  "doi": "10.3390/diseases14010021",
+  "citations": 2
  },
  {
   "pmid": "41594162",
@@ -5206,7 +5348,8 @@
    "lung nodule",
    "machine learning"
   ],
-  "doi": "10.3390/diagnostics16020186"
+  "doi": "10.3390/diagnostics16020186",
+  "citations": 1
  },
  {
   "pmid": "41598306",
@@ -5236,7 +5379,8 @@
    "scan coverage",
    "underscanning"
   ],
-  "doi": "10.3390/life16010152"
+  "doi": "10.3390/life16010152",
+  "citations": 0
  },
  {
   "pmid": "41691132",
@@ -5278,7 +5422,8 @@
    "Lung cancer",
    "Lung nodule"
   ],
-  "doi": "10.1007/s00330-026-12372-3"
+  "doi": "10.1007/s00330-026-12372-3",
+  "citations": 1
  },
  {
   "pmid": "41716936",
@@ -5303,7 +5448,8 @@
   "year": 2026,
   "mesh": [],
   "keywords": [],
-  "doi": "10.1016/j.mcpdig.2026.100335"
+  "doi": "10.1016/j.mcpdig.2026.100335",
+  "citations": 2
  },
  {
   "pmid": "41734977",
@@ -5338,7 +5484,8 @@
    "Health Information Interoperability",
    "Medical Informatics Applications"
   ],
-  "doi": "10.1136/bmjhci-2025-101989"
+  "doi": "10.1136/bmjhci-2025-101989",
+  "citations": 0
  },
  {
   "pmid": "41749798",
@@ -5362,7 +5509,8 @@
    "online learning",
    "smokers"
   ],
-  "doi": "10.3390/cancers18040544"
+  "doi": "10.3390/cancers18040544",
+  "citations": 1
  },
  {
   "pmid": "41775478",
@@ -5402,7 +5550,8 @@
    "Chest imaging",
    "Pulmonary Disease"
   ],
-  "doi": "10.1136/bmjopen-2025-103331"
+  "doi": "10.1136/bmjopen-2025-103331",
+  "citations": 0
  },
  {
   "pmid": "41778236",
@@ -5427,7 +5576,8 @@
    "lung cancer",
    "modular neural network"
   ],
-  "doi": "10.21873/cdp.10519"
+  "doi": "10.21873/cdp.10519",
+  "citations": 0
  },
  {
   "pmid": "41815002",
@@ -5468,7 +5618,8 @@
    "lung cancer screening",
    "lung-RADS"
   ],
-  "doi": "10.1097/RTI.0000000000000877"
+  "doi": "10.1097/RTI.0000000000000877",
+  "citations": 0
  },
  {
   "pmid": "41833807",
@@ -5516,7 +5667,8 @@
    "lung cancer",
    "risk prediction"
   ],
-  "doi": "10.1016/j.chest.2026.02.022"
+  "doi": "10.1016/j.chest.2026.02.022",
+  "citations": 0
  },
  {
   "pmid": "41840065",
@@ -5548,7 +5700,8 @@
    "Low-dose CT scan",
    "Lung cancer"
   ],
-  "doi": "10.1038/s41598-026-43517-5"
+  "doi": "10.1038/s41598-026-43517-5",
+  "citations": 0
  },
  {
   "pmid": "41848489",
@@ -5591,7 +5744,8 @@
    "low-dose chest CT",
    "reading time"
   ],
-  "doi": "10.2214/AJR.26.34552"
+  "doi": "10.2214/AJR.26.34552",
+  "citations": 2
  },
  {
   "pmid": "41872344",
@@ -5638,7 +5792,8 @@
    "Solitary pulmonary nodule",
    "X-ray computed tomography"
   ],
-  "doi": "10.1007/s00330-026-12444-4"
+  "doi": "10.1007/s00330-026-12444-4",
+  "citations": 1
  },
  {
   "pmid": "41959970",
@@ -5667,7 +5822,8 @@
    "lung cancer",
    "nodule"
   ],
-  "doi": "10.7759/cureus.104881"
+  "doi": "10.7759/cureus.104881",
+  "citations": 0
  },
  {
   "pmid": "41975727",
@@ -5691,7 +5847,8 @@
    "pulmonary nodules",
    "quantitative analysis"
   ],
-  "doi": "10.3390/diagnostics16071014"
+  "doi": "10.3390/diagnostics16071014",
+  "citations": 0
  },
  {
   "pmid": "41982688",
@@ -5723,7 +5880,8 @@
    "invasiveness of pulmonary nodules",
    "nomogram"
   ],
-  "doi": "10.21037/tlcr-2025-1083"
+  "doi": "10.21037/tlcr-2025-1083",
+  "citations": 0
  },
  {
   "pmid": "42082236",
@@ -5775,7 +5933,8 @@
    "Lung Neoplasms",
    "Risk Assessment"
   ],
-  "doi": "10.1136/bmjopen-2026-116423"
+  "doi": "10.1136/bmjopen-2026-116423",
+  "citations": 0
  },
  {
   "pmid": "42115281",
@@ -5798,7 +5957,8 @@
    "Multi-channel CNN",
    "NHIRD"
   ],
-  "doi": "10.1038/s41598-026-52173-8"
+  "doi": "10.1038/s41598-026-52173-8",
+  "citations": 0
  },
  {
   "pmid": "42122926",
@@ -5825,7 +5985,8 @@
    "lung cancer",
    "screening"
   ],
-  "doi": "10.3390/jcm15093193"
+  "doi": "10.3390/jcm15093193",
+  "citations": 0
  },
  {
   "pmid": "42123208",
@@ -5852,7 +6013,8 @@
    "size-specific dose–length product (DLPss)",
    "topogram"
   ],
-  "doi": "10.3390/jcm15093474"
+  "doi": "10.3390/jcm15093474",
+  "citations": 0
  },
  {
   "pmid": "42140481",
@@ -5895,7 +6057,8 @@
    "lung cancer screening",
    "risk prediction"
   ],
-  "doi": "10.1016/j.chest.2026.05.002"
+  "doi": "10.1016/j.chest.2026.05.002",
+  "citations": 0
  },
  {
   "pmid": "42185923",
@@ -5932,7 +6095,8 @@
    "Screening",
    "Topic modelling"
   ],
-  "doi": "10.1186/s13148-026-02084-2"
+  "doi": "10.1186/s13148-026-02084-2",
+  "citations": 0
  },
  {
   "pmid": "42229468",
@@ -5978,7 +6142,8 @@
    "phantom",
    "transfer learning"
   ],
-  "doi": "10.1088/2057-1976/ae7603"
+  "doi": "10.1088/2057-1976/ae7603",
+  "citations": 0
  },
  {
   "pmid": "42249069",
@@ -6006,7 +6171,8 @@
   "year": 2026,
   "mesh": [],
   "keywords": [],
-  "doi": "10.1038/s43856-026-01701-8"
+  "doi": "10.1038/s43856-026-01701-8",
+  "citations": 0
  },
  {
   "pmid": "42302275",
@@ -6045,7 +6211,8 @@
    "online",
    "smoking"
   ],
-  "doi": "10.2196/89823"
+  "doi": "10.2196/89823",
+  "citations": 0
  },
  {
   "pmid": "42339680",
@@ -6094,7 +6261,8 @@
    "early detection",
    "lung cancer (LC)"
   ],
-  "doi": "10.1080/13696998.2026.2682681"
+  "doi": "10.1080/13696998.2026.2682681",
+  "citations": 0
  },
  {
   "pmid": "42340186",
@@ -6154,7 +6322,8 @@
    "Supervised Learning",
    "Thorax"
   ],
-  "doi": "10.1148/ryai.260179"
+  "doi": "10.1148/ryai.260179",
+  "citations": 0
  },
  {
   "pmid": "42359448",
@@ -6177,7 +6346,8 @@
    "low-dose computed tomography",
    "lung cancer"
   ],
-  "doi": "10.3389/fdgth.2026.1836675"
+  "doi": "10.3389/fdgth.2026.1836675",
+  "citations": 0
  },
  {
   "pmid": "42444867",
@@ -6204,7 +6374,8 @@
    "health care utilization",
    "reassurance seeking"
   ],
-  "doi": "10.21037/jtd-2026-0653"
+  "doi": "10.21037/jtd-2026-0653",
+  "citations": 0
  },
  {
   "pmid": "42502844",
@@ -6231,7 +6402,8 @@
    "Opportunistic Screening",
    "Workflow Efficiency"
   ],
-  "doi": "10.1016/j.ejro.2026.100799"
+  "doi": "10.1016/j.ejro.2026.100799",
+  "citations": 0
  },
  {
   "pmid": "42526533",
@@ -6270,7 +6442,8 @@
    "Noninvasive diagnosis",
    "Proteomics"
   ],
-  "doi": "10.1016/j.trsl.2026.07.013"
+  "doi": "10.1016/j.trsl.2026.07.013",
+  "citations": 0
  },
  {
   "pmid": "42576231",
@@ -6300,7 +6473,8 @@
    "Meta-analysis",
    "Systematic review"
   ],
-  "doi": "10.1186/s41512-026-00235-w"
+  "doi": "10.1186/s41512-026-00235-w",
+  "citations": 0
  },
  {
   "pmid": "42582799",
@@ -6326,7 +6500,8 @@
    "lung cancer detection",
    "temporal convolutional networks"
   ],
-  "doi": "10.1177/11795972261472208"
+  "doi": "10.1177/11795972261472208",
+  "citations": 0
  },
  {
   "pmid": "42600771",
@@ -6358,7 +6533,8 @@
    "low-dose CT scan",
    "lung cancer screening"
   ],
-  "doi": "10.1016/j.chest.2026.07.5237"
+  "doi": "10.1016/j.chest.2026.07.5237",
+  "citations": 0
  },
  {
   "pmid": "42608820",
@@ -6383,7 +6559,8 @@
    "coronary artery calcium",
    "low-dose CT"
   ],
-  "doi": "10.1093/bjr/tqag189"
+  "doi": "10.1093/bjr/tqag189",
+  "citations": 0
  },
  {
   "pmid": "42634457",
@@ -6425,7 +6602,8 @@
    "Mobile CT",
    "Risk factors"
   ],
-  "doi": "10.3779/j.issn.1009-3419.2026.106.15"
+  "doi": "10.3779/j.issn.1009-3419.2026.106.15",
+  "citations": 0
  },
  {
   "pmid": "42668303",
@@ -6456,7 +6634,8 @@
    "Solitary pulmonary nodule",
    "Tomography, X-ray computed"
   ],
-  "doi": "10.1007/s00330-026-12825-9"
+  "doi": "10.1007/s00330-026-12825-9",
+  "citations": 0
  },
  {
   "pmid": "42696681",
@@ -6490,7 +6669,8 @@
    "Aged"
   ],
   "keywords": [],
-  "doi": "10.1200/CCI-26-00030"
+  "doi": "10.1200/CCI-26-00030",
+  "citations": 0
  },
  {
   "pmid": "42773211",
@@ -6559,6 +6739,7 @@
    "Mass Screening"
   ],
   "keywords": [],
-  "doi": "10.1038/s41591-026-04656-4"
+  "doi": "10.1038/s41591-026-04656-4",
+  "citations": 0
  }
 ]

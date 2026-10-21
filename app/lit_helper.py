@@ -125,6 +125,51 @@ def embed_texts(texts, client=None, batch_size=100):
     return V, usage
 
 
+ICITE_URL = "https://icite.od.nih.gov/api/pubs"
+
+
+def fetch_citations(pmids, batch_size=300):
+    """Citation counts from NIH iCite (free, no key). Returns {pmid: count}.
+    PubMed itself does not carry cited-by counts. On any network failure the
+    dict is empty and the app carries on without counts."""
+    import requests
+
+    counts = {}
+    for i in range(0, len(pmids), batch_size):
+        try:
+            r = requests.get(ICITE_URL, params={"pmids": ",".join(pmids[i:i + batch_size]),
+                                                "fl": "pmid,citation_count"}, timeout=60)
+            r.raise_for_status()
+            for row in r.json().get("data", []):
+                counts[str(row["pmid"])] = int(row.get("citation_count") or 0)
+        except Exception:  # noqa: BLE001
+            return {}
+    return counts
+
+
+def ensure_citations(documents, save_path=None, progress=None):
+    """Stamp a "citations" count on every record that lacks one. Writes the
+    updated records back to save_path when given."""
+    missing = [d["pmid"] for d in documents if "citations" not in d]
+    if not missing:
+        return documents
+    if progress:
+        progress(f"Fetching citation counts for {len(missing)} papers from iCite ...")
+    counts = fetch_citations(missing)
+    if not counts:
+        return documents
+    for d in documents:
+        if "citations" not in d:
+            d["citations"] = counts.get(d["pmid"], 0)
+    if save_path:
+        try:
+            with open(save_path, "w") as f:
+                json.dump(documents, f, indent=1, ensure_ascii=False)
+        except OSError:
+            pass
+    return documents
+
+
 def build_corpus(pool=DEFAULT_POOL, force=False, progress=None):
     """Fetch abstracts for a pool and embed them. Uses the cached files when
     present. Returns (documents, vectors, usage_or_None, source) where source
@@ -136,11 +181,12 @@ def build_corpus(pool=DEFAULT_POOL, force=False, progress=None):
             documents = json.load(f)
         vectors = np.load(embeddings)
         if len(documents) == vectors.shape[0]:
-            return documents, vectors, None, "cache"
+            return ensure_citations(documents, abstracts, progress), vectors, None, "cache"
 
     if progress:
         progress("Fetching abstracts from PubMed ...")
     documents = load_corpus(read_pmids(pool_path(pool, "pmids.txt")))
+    ensure_citations(documents, progress=progress)
     if progress:
         progress(f"Embedding {len(documents)} abstracts ...")
     vectors, usage = embed_texts([d["title"] + "\n" + d["abstract"] for d in documents])
@@ -193,7 +239,7 @@ def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=Fals
     if not force and os.path.exists(abstracts) and os.path.exists(embeddings):
         with open(abstracts) as f:
             documents = json.load(f)
-        return documents, np.load(embeddings), None, "cache", pool_id
+        return ensure_citations(documents, abstracts, progress), np.load(embeddings), None, "cache", pool_id
 
     if progress:
         progress("Searching PubMed ...")
@@ -206,6 +252,7 @@ def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=Fals
     documents = load_corpus(pmids)
     if not documents:
         raise ValueError("Records were found but none had an abstract.")
+    ensure_citations(documents, progress=progress)
     if progress:
         progress(f"Embedding {len(documents)} abstracts ...")
     vectors, usage = embed_texts([d["title"] + "\n" + d["abstract"] for d in documents])
