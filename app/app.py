@@ -315,7 +315,11 @@ def paper_map(docs, V, pool_id, fixed=()):
         labels = alt.Chart(red).mark_text(dy=-14, color="red", fontWeight="bold").encode(
             x="x", y="y", text="Paper")
         chart = chart + dots + labels
-    st.altair_chart(chart.properties(height=420).interactive(), use_container_width=True)
+    chart = chart.properties(
+        height=420,
+        usermeta={"embedOptions": {"loader": {"target": "_blank"}}},   # open links in a new tab
+    ).interactive()
+    st.altair_chart(chart, use_container_width=True)
     st.caption("Click a dot to open the paper on PubMed." + (" Red: your anchor and companions." if len(red) else ""))
     if have_cites:
         top = df.loc[df["size"].idxmax()]
