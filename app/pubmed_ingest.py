@@ -45,11 +45,14 @@ def _sleep():
     time.sleep(0.11 if API_KEY else 0.34)
 
 
-def search_pmids(term=QUERY, retmax=500):
-    """esearch: turn a PubMed query into a list of PMIDs."""
+def search_pmids(term=QUERY, retmax=500, sort=None):
+    """esearch: turn a PubMed query into a list of PMIDs. PubMed's default
+    order is newest first, so a truncated list is all recent papers; pass
+    sort="relevance" to get the best matches across years instead."""
+    extra = {"sort": sort} if sort else {}
     r = requests.get(
         f"{EUTILS}/esearch.fcgi",
-        params=_params(term=term, retmax=retmax, retmode="json"),
+        params=_params(term=term, retmax=retmax, retmode="json", **extra),
         timeout=60,
     )
     r.raise_for_status()

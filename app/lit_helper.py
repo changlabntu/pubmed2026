@@ -242,7 +242,8 @@ def companions(documents, anchor, seed=42, k=2):
 def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=False):
     """A student's own PubMed query, fetched and embedded like a shipped pool.
     Cached under pools/custom/<hash>/ so a repeat build is free. Returns
-    (documents, vectors, usage_or_None, source, pool_id)."""
+    (documents, vectors, usage_or_None, source, pool_id). The pool's
+    query.txt also records how many records PubMed matched in total."""
     from pubmed_ingest import search_pmids
 
     term = query.strip() + (EXCLUDE_CLAUSE if exclude else "")
@@ -256,12 +257,12 @@ def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=Fals
 
     if progress:
         progress("Searching PubMed ...")
-    pmids, total = search_pmids(term, retmax=retmax)
+    pmids, total = search_pmids(term, retmax=retmax, sort="relevance")
     pmids = sorted(pmids, key=int)
     if not pmids:
         raise ValueError("PubMed returned no records for this query.")
     if progress:
-        progress(f"PubMed reports {total} hits; fetching {len(pmids)} abstracts ...")
+        progress(f"PubMed matched {total} records; fetching the {len(pmids)} most relevant ...")
     documents = load_corpus(pmids)
     if not documents:
         raise ValueError("Records were found but none had an abstract.")
@@ -273,6 +274,8 @@ def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=Fals
         os.makedirs(folder, exist_ok=True)
         with open(os.path.join(folder, "query.txt"), "w") as f:
             f.write(term + "\n")
+        with open(os.path.join(folder, "hits.txt"), "w") as f:
+            f.write(f"{total}\n")
         with open(abstracts, "w") as f:
             json.dump(documents, f, indent=1, ensure_ascii=False)
         np.save(embeddings, vectors)

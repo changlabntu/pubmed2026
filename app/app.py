@@ -187,7 +187,8 @@ st.header("Q1. Build corpus")
 st.markdown(
     "A corpus is a set of PubMed abstracts, each turned into a 1,536-number vector "
     "with `text-embedding-3-small`. Write your own PubMed query, or use a pool the "
-    "instructor prepared."
+    "instructor prepared. A query with more hits than the record limit keeps the most "
+    "relevant ones, not the newest."
 )
 source = st.radio("Source", ["My own PubMed query", "Shipped pool"], horizontal=True, key="source")
 if source == "Shipped pool":
@@ -280,7 +281,11 @@ def paper_map(docs, V, pool_id):
     st.altair_chart(chart, use_container_width=True)
     if have_cites:
         top = df.loc[df["size"].idxmax()]
+        n_counted = sum(c is not None for c in cites)
+        n_zero = sum(1 for c in cites if c == 0)
         st.caption(f"Dot size: citation count from NIH iCite, capped at {CITE_CAP}. "
+                   f"{n_counted} of {len(docs)} papers have a count, {n_zero} of them zero "
+                   f"(recent papers have not been cited yet; iCite lags PubMed by a few months). "
                    f"Most cited: {top['Paper']} ({top['Citations']}).")
     else:
         st.warning("Citation counts are unavailable: the NIH iCite service could not be reached from this "
