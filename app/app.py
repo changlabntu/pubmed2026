@@ -221,6 +221,8 @@ if run_button("Build corpus", "btn_q1"):
     if POOL:
         with st.spinner("Loading corpus ..."):
             docs, V, usage, src = cached_corpus(POOL)
+            if docs and not all("citations" in d for d in docs):
+                L.ensure_citations(docs, L.pool_path(POOL, "abstracts.json"))
         meta = {"pool": POOL, "query": L.pool_query(POOL), "source": src}
     elif not OWN_QUERY.strip():
         st.warning("Type a PubMed query first.")
@@ -264,9 +266,9 @@ def paper_map(docs, V, pool_id):
         "Paper": [f"{d['first_author']} {d['year']}" for d in docs],
         "Title": [d["title"] for d in docs],
         "Year": [d.get("year") for d in docs],
-        "Citations": [c if c is not None else 0 for c in cites],
+        "Citations": [c if c is not None else "n/a" for c in cites],
     })
-    df["size"] = df["Citations"].clip(upper=CITE_CAP)
+    df["size"] = pd.to_numeric(df["Citations"], errors="coerce").fillna(0).clip(upper=CITE_CAP)
     enc = dict(
         x=alt.X("x", axis=None), y=alt.Y("y", axis=None),
         color=alt.Color("Year:Q", scale=alt.Scale(scheme="viridis")),
@@ -277,8 +279,13 @@ def paper_map(docs, V, pool_id):
     chart = alt.Chart(df).mark_circle(opacity=0.75).encode(**enc).properties(height=420).interactive()
     st.altair_chart(chart, use_container_width=True)
     if have_cites:
+        top = df.loc[df["size"].idxmax()]
         st.caption(f"Dot size: citation count from NIH iCite, capped at {CITE_CAP}. "
-                   f"Most cited: {df.loc[df['Citations'].idxmax(), 'Paper']} ({df['Citations'].max()}).")
+                   f"Most cited: {top['Paper']} ({top['Citations']}).")
+    else:
+        st.warning("Citation counts are unavailable: the NIH iCite service could not be reached from this "
+                   "server, so all dots are the same size. Press Build corpus again to retry."
+                   + (f" Last error: {L.LAST_ICITE_ERROR}" if L.LAST_ICITE_ERROR else ""))
 
 
 if "docs" not in ss:

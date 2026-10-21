@@ -128,22 +128,35 @@ def embed_texts(texts, client=None, batch_size=100):
 ICITE_URL = "https://icite.od.nih.gov/api/pubs"
 
 
-def fetch_citations(pmids, batch_size=300):
+LAST_ICITE_ERROR = None
+
+
+def fetch_citations(pmids, batch_size=200, attempts=3):
     """Citation counts from NIH iCite (free, no key). Returns {pmid: count}.
-    PubMed itself does not carry cited-by counts. On any network failure the
-    dict is empty and the app carries on without counts."""
+    PubMed itself does not carry cited-by counts. A failed batch is retried;
+    whatever was fetched is kept, and the last error is stored in
+    LAST_ICITE_ERROR so the app can show why counts are missing."""
+    import time
+
     import requests
 
+    global LAST_ICITE_ERROR
+    LAST_ICITE_ERROR = None
     counts = {}
+    headers = {"User-Agent": "pubmed2026-course-app (contact: course instructor)"}
     for i in range(0, len(pmids), batch_size):
-        try:
-            r = requests.get(ICITE_URL, params={"pmids": ",".join(pmids[i:i + batch_size]),
-                                                "fl": "pmid,citation_count"}, timeout=60)
-            r.raise_for_status()
-            for row in r.json().get("data", []):
-                counts[str(row["pmid"])] = int(row.get("citation_count") or 0)
-        except Exception:  # noqa: BLE001
-            return {}
+        batch = ",".join(pmids[i:i + batch_size])
+        for attempt in range(attempts):
+            try:
+                r = requests.get(ICITE_URL, params={"pmids": batch, "fl": "pmid,citation_count"},
+                                 headers=headers, timeout=60)
+                r.raise_for_status()
+                for row in r.json().get("data", []):
+                    counts[str(row["pmid"])] = int(row.get("citation_count") or 0)
+                break
+            except Exception as e:  # noqa: BLE001
+                LAST_ICITE_ERROR = f"{type(e).__name__}: {str(e)[:200]}"
+                time.sleep(2 ** attempt)
     return counts
 
 
@@ -159,8 +172,8 @@ def ensure_citations(documents, save_path=None, progress=None):
     if not counts:
         return documents
     for d in documents:
-        if "citations" not in d:
-            d["citations"] = counts.get(d["pmid"], 0)
+        if "citations" not in d and d["pmid"] in counts:
+            d["citations"] = counts[d["pmid"]]
     if save_path:
         try:
             with open(save_path, "w") as f:
