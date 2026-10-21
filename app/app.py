@@ -164,6 +164,15 @@ def md_table(rows):
 
 ALLOW_SONNET = False   # flip to True to let students pick Sonnet 5.5
 
+# Prefilled values for the own-query mode, so the demo runs with no typing.
+# Same literature as the shipped lung_ct pool; students replace all three.
+DEMO = {
+    "query": '"lung cancer" AND ("deep learning" OR "artificial intelligence") '
+             'AND ("low-dose CT" OR "low-dose computed tomography") AND screening',
+    "pmids": "41308576, 42229468, 33708918",
+    "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+}
+
 with st.sidebar:
     st.subheader("Model")
     if ALLOW_SONNET:
@@ -204,14 +213,14 @@ if source == "Shipped pool":
     POOL_KEY = POOL
 else:
     POOL, PAPERS = None, None
-    OWN_QUERY = st.text_input("PubMed query", key="own_query",
+    OWN_QUERY = st.text_input("PubMed query", key="own_query", value=DEMO["query"],
                               placeholder='(knee) AND (MRI) AND ("deep learning" OR "machine learning") AND (pain)')
     OWN_RETMAX = st.slider("Max records", 50, 500, 200, 50, key="own_retmax")
     OWN_EXCLUDE = True   # reviews, editorials, letters, meta-analyses are always excluded
     st.caption("Reviews, editorials, letters and meta-analyses are excluded automatically.")
     q1_sig = ("custom", OWN_QUERY.strip(), OWN_RETMAX, OWN_EXCLUDE)
     POOL_KEY = "custom"
-default_fixed = ", ".join([PAPERS["anchor"]] + PAPERS["companions"]) if PAPERS else ""
+default_fixed = ", ".join([PAPERS["anchor"]] + PAPERS["companions"]) if PAPERS else DEMO["pmids"]
 FIXED_TEXT = st.text_input(
     "Anchor paper and two companion papers (three PMIDs, comma separated; the first is the anchor)",
     value=default_fixed, key=f"fixed_{POOL_KEY}",
@@ -415,7 +424,7 @@ st.markdown(
     "The grading prompt below decides the scale and the return format. Edit it freely: "
     "the table shows whatever keys the model returns."
 )
-default_q = PAPERS["question"] if PAPERS else ""
+default_q = PAPERS["question"] if PAPERS else DEMO["question"]
 QUESTION = st.text_input("Research question", value=default_q, key=f"question_{POOL_KEY}").strip()
 ss.active_question = QUESTION
 fixed_in_pool = [p for p in meta.get("fixed", []) if p in by]
