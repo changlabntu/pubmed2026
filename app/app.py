@@ -295,12 +295,14 @@ def paper_map(docs, V, pool_id, fixed=()):
         "Title": [d["title"] for d in docs],
         "Year": [d.get("year") for d in docs],
         "Citations": [c if c is not None else "n/a" for c in cites],
+        "url": [f"https://pubmed.ncbi.nlm.nih.gov/{d['pmid']}/" for d in docs],
     })
     df["size"] = pd.to_numeric(df["Citations"], errors="coerce").fillna(0).clip(upper=CITE_CAP)
     enc = dict(
         x=alt.X("x", axis=None), y=alt.Y("y", axis=None),
         color=alt.Color("Year:Q", scale=alt.Scale(scheme="viridis")),
         tooltip=["PMID", "Paper", "Title", "Citations"],
+        href="url:N",
     )
     if have_cites:
         enc["size"] = alt.Size("size:Q", scale=alt.Scale(domain=[0, CITE_CAP], range=[25, 500]), legend=None)
@@ -308,14 +310,13 @@ def paper_map(docs, V, pool_id, fixed=()):
     red = df[df["PMID"].isin(fixed)]
     if len(red):
         dots = alt.Chart(red).mark_circle(color="red", stroke="black", strokeWidth=1.5, opacity=1).encode(
-            x="x", y="y", tooltip=["PMID", "Paper", "Title", "Citations"],
+            x="x", y="y", tooltip=["PMID", "Paper", "Title", "Citations"], href="url:N",
             **({"size": enc["size"]} if "size" in enc else {}))
         labels = alt.Chart(red).mark_text(dy=-14, color="red", fontWeight="bold").encode(
             x="x", y="y", text="Paper")
         chart = chart + dots + labels
     st.altair_chart(chart.properties(height=420).interactive(), use_container_width=True)
-    if len(red):
-        st.caption("Red: your anchor and companion papers.")
+    st.caption("Click a dot to open the paper on PubMed." + (" Red: your anchor and companions." if len(red) else ""))
     if have_cites:
         top = df.loc[df["size"].idxmax()]
         n_counted = sum(c is not None for c in cites)
