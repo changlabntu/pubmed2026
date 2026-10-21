@@ -150,6 +150,16 @@ def build_corpus(pool=DEFAULT_POOL, force=False, progress=None):
     return documents, vectors, usage, "network"
 
 
+def tsne_2d(vectors, seed=42):
+    """Project the embedding vectors to two dimensions for a scatter plot.
+    Close dots are similar papers; the overall layout is arbitrary."""
+    from sklearn.manifold import TSNE
+
+    n = vectors.shape[0]
+    perplexity = max(2, min(30, (n - 1) // 4))
+    return TSNE(n_components=2, perplexity=perplexity, init="pca", random_state=seed).fit_transform(vectors)
+
+
 def load_papers(pool=DEFAULT_POOL):
     """The question, anchor and companion PMIDs for a pool."""
     with open(pool_path(pool, "papers.json")) as f:

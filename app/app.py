@@ -242,6 +242,38 @@ if run_button("Build corpus", "btn_q1"):
             ss.ledger.add("Q1 embed", usage)
         ss.docs, ss.V, ss.corpus_meta = docs, V, meta
 
+@st.cache_data(show_spinner="Drawing the map ...")
+def cached_map(pool_id, _vectors):
+    return L.tsne_2d(_vectors)
+
+
+def paper_map(docs, V, pool_id):
+    """Every paper as a dot, placed by t-SNE on its embedding. Hover for the title."""
+    import altair as alt
+    import pandas as pd
+
+    xy = cached_map(pool_id, V)
+    df = pd.DataFrame({
+        "x": xy[:, 0], "y": xy[:, 1],
+        "PMID": [d["pmid"] for d in docs],
+        "Paper": [f"{d['first_author']} {d['year']}" for d in docs],
+        "Title": [d["title"] for d in docs],
+        "Year": [d.get("year") for d in docs],
+    })
+    chart = (
+        alt.Chart(df)
+        .mark_circle(size=70, opacity=0.8)
+        .encode(
+            x=alt.X("x", axis=None), y=alt.Y("y", axis=None),
+            color=alt.Color("Year:Q", scale=alt.Scale(scheme="viridis")),
+            tooltip=["PMID", "Paper", "Title"],
+        )
+        .properties(height=420)
+        .interactive()
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
 if "docs" not in ss:
     st.info("Build the corpus to unlock the other steps.")
 else:
@@ -250,6 +282,7 @@ else:
     years = sorted({d["year"] for d in docs if d.get("year")})
     st.success(f"{len(docs)} documents, vectors {V.shape[0]} x {V.shape[1]}, loaded from {meta['source']}. "
                f"Years {years[0]} to {years[-1]}.")
+    paper_map(docs, V, meta["pool"])
     st.caption("**Report: the document count.**")
     comment_box("q1")
 
