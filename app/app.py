@@ -328,19 +328,9 @@ def paper_map(docs, V, pool_id, fixed=()):
 vegaEmbed("#vis", {spec}, {{actions: false, loader: {{target: "_blank"}}}});
 </script>"""
     st.components.v1.html(html, height=440)
-    st.caption("Click a dot to open the paper on PubMed." + (" Red: your anchor and companions." if len(red) else ""))
-    if have_cites:
-        top = df.loc[df["size"].idxmax()]
-        n_counted = sum(c is not None for c in cites)
-        n_zero = sum(1 for c in cites if c == 0)
-        st.caption(f"Dot size: citation count from NIH iCite, capped at {CITE_CAP}. "
-                   f"{n_counted} of {len(docs)} papers have a count, {n_zero} of them zero "
-                   f"(recent papers have not been cited yet; iCite lags PubMed by a few months). "
-                   f"Most cited: {top['Paper']} ({top['Citations']}).")
-    else:
-        st.warning("Citation counts are unavailable: the NIH iCite service could not be reached from this "
-                   "server, so all dots are the same size. Press Build corpus again to retry."
-                   + (f" Last error: {L.LAST_ICITE_ERROR}" if L.LAST_ICITE_ERROR else ""))
+    if not have_cites:
+        st.warning("Citation counts unavailable (iCite unreachable)."
+                   + (f" {L.LAST_ICITE_ERROR}" if L.LAST_ICITE_ERROR else ""))
 
 
 if "docs" not in ss:
