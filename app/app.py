@@ -97,8 +97,7 @@ def prompt_editor(name, default, label):
 
 
 def comment_box(step):
-    st.text_area("My comment on this step", key=f"comment_{step}", height=80,
-                 placeholder="What surprised you? Do you agree with the model? Why or why not?")
+    st.text_area("Comment", key=f"comment_{step}", height=80)
 
 
 def paper_label(d):
@@ -342,8 +341,6 @@ else:
     st.success(f"{len(docs)} documents, vectors {V.shape[0]} x {V.shape[1]}, loaded from {meta['source']}. "
                f"Years {years[0]} to {years[-1]}.")
     paper_map(docs, V, meta["pool"], fixed=meta.get("fixed", ()))
-    st.caption("**Report: the document count.**")
-    comment_box("q1")
 
 
 def render_totals():
@@ -367,7 +364,7 @@ def build_report():
         lines += [f"- Pool: `{meta['pool']}`", f"- PubMed query: `{meta['query']}`",
                   f"- Documents: {len(ss.docs)}",
                   f"- Anchor and companions: {', '.join(meta.get('fixed', [])) or 'not given'}", ""]
-    lines += [f"Comment: {ss.get('comment_q1', '')}", ""]
+    lines.append("")
     if "docs" in ss:
         lines += ["## Research question", "", ss.get("active_question", ""), ""]
     for step, title in (("q2", "Q2. Grade three fixed papers"), ("q3", "Q3. Anchor's neighbours"),
@@ -454,7 +451,6 @@ elif run_button("Grade", "btn_q2"):
              "settings": {"question": QUESTION, "anchor": ANCHOR, "companions": ", ".join(COMPANIONS)}}
 if "q2" in ss:
     show_grades(ss.q2)
-    st.caption("**Report: which PMID graded highest, and the model's reason.**")
     comment_box("q2")
 
 # ---------------------------------------------------------------- Q3
@@ -491,7 +487,6 @@ if "q3" in ss:
         st.markdown(paper_line(d, s))
     st.markdown("**Grades for anchor + two nearest**")
     show_grades(ss.q3)
-    st.caption("**Report: did the neighbours grade higher than Q2's companions?**")
     comment_box("q3")
 
 # ---------------------------------------------------------------- Q4
@@ -537,7 +532,6 @@ if "q4" in ss:
     show_grades(r4)
     if r4["records"] is not None:
         n_high = sum(L.grade_of(r) == "HIGH" for r in r4["records"])
-        st.caption(f"**Report: {n_high} of {len(r4['hits'])} graded HIGH, and the anchor's rank.**")
     comment_box("q4")
 
 # ---------------------------------------------------------------- Q5
@@ -585,7 +579,6 @@ if "q5" in ss:
         [{"Verdict": r["verdict"], "PMID": r["pmid"], "Claim": r["claim"], "Issue": r.get("issue")} for r in rows],
         width="stretch", hide_index=True,
     )
-    st.caption("**Report: the number of claims and how many were supported.**")
     comment_box("q5")
 
 st.divider()
