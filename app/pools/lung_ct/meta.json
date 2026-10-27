@@ -1,0 +1,6 @@
+{
+ "term": "\"lung cancer\" AND (\"deep learning\" OR \"artificial intelligence\") AND (\"low-dose CT\" OR \"low-dose computed tomography\") AND screening",
+ "total": 183,
+ "fetched": 183,
+ "fetch_date": "2026-10-18"
+}

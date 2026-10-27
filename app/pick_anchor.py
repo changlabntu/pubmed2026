@@ -23,7 +23,7 @@ from build_pool import companions  # noqa: E402
 def main(pool, question, k=10):
     docs, V, _, _ = L.build_corpus(pool)
     hits, _ = L.search(question, docs, V, k=k)
-    recs, usage = L.grade_relevance(question, [d for d, _ in hits])
+    recs, usage, _ = L.grade_relevance(question, [d for d, _ in hits])
     by = {r["pmid"]: r for r in recs}
     print(f"{len(docs)} documents in pool '{pool}'. Top {k} for the question:\n")
     for rank, (d, sim) in enumerate(hits, 1):

@@ -1,7 +1,12 @@
 {
  "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+ "gap": "No AI system for lung cancer screening has been validated prospectively in a real screening cohort.",
+ "disproof": "A paper whose own study evaluates an AI system on a screening cohort with a cancer reference standard, prospectively or on held-out data from a different programme.",
  "anchor": "41308576",
- "companions": ["42229468", "33708918"],
+ "companions": [
+  "42229468",
+  "33708918"
+ ],
  "companion_seed": 42,
  "note": "anchor = Ledda 2026, AI as first reader on 4104 BioMILD scans. companions = random.Random(42).sample(pool minus anchor, 2)"
 }

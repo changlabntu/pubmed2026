@@ -72,14 +72,28 @@ by git.
 | `lit_helper.py` | corpus, search (embedding / BM25 / hybrid), grading, synthesis, verification |
 | `pubmed_ingest.py` | PubMed E-utilities fetch and parse; citation counts come from NIH iCite in `lit_helper.fetch_citations` |
 | `build_pool.py`, `pick_anchor.py` | instructor tools |
-| `pools/<name>/` | query, PMIDs, abstracts, vectors, papers.json |
+| `pools/<name>/` | query, PMIDs, meta.json (match count, fetch date), abstracts, vectors, papers.json (question, gap, anchor) |
 | `homework/homework.md` | what to submit |
 | `UI-MOCKUP.md` | the page layout as a text sketch |
 
 ## Cost
 
-A default run is about 1.1 cents on Haiku, about 30 model calls, most of them
-Q5's one-call-per-sentence verification. The default cap is 5 cents.
+A default run is about 1.5 cents on Haiku, about 30 model calls, most of them
+Q5's one-call-per-sentence verification, plus one Q6 call. Switching on the
+full screen in Q4 grades every paper ten per call: on the 181-paper lung_ct
+pool that measured 19 calls and 3.9 cents (the in-app estimate said 3.3),
+and the whole run came to 5.6 cents because Q5 and Q6 then read 87 graded
+papers. The default cap is 10 cents.
+
+## The gap loop
+
+Q0 asks for the research question, the proposed gap (what nobody has done)
+and what evidence would disprove it. All three go into every grading and
+synthesis call as context, never into the editable prompts. Q1 reports the
+retrieval funnel (PubMed matches, fetched, with abstract, fetch date) so
+"not retrieved" is never mistaken for "no study exists". Q6 ends the run
+with a verdict on the gap: contradicted, partly addressed, provisionally
+supported, or insufficient evidence, with the closest counterexamples.
 
 ## Two things to know
 

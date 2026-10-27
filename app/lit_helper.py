@@ -10,13 +10,16 @@ Pipeline pieces, in the order the app uses them:
   hybrid_search       the two rankings fused
   rewrite_query       the model turns the question into a search string
   grade_relevance     the model grades each paper; the prompt owns the format
+  grade_all           the same grader over every paper in the pool, in batches
   synthesize          the model writes a short review from the graded papers
   verify_claims       the model checks every cited sentence against its abstract
+  assess_gap          the model judges whether the proposed gap is still open
 
 Every model call takes the system prompt and model as arguments, because the
 app lets students edit both, and returns a Usage so the app can show cost.
 """
 
+import datetime as dt
 import hashlib
 import json
 import math
@@ -254,6 +257,44 @@ def pool_query(pool):
         return ""
 
 
+def pool_meta(pool):
+    """The retrieval funnel for a pool: how many records PubMed matched, how
+    many were fetched, and when. Reads meta.json; older pools fall back to
+    hits.txt, pmids.txt and the file date of abstracts.json. Missing values
+    are None."""
+    meta = {"total": None, "fetched": None, "fetch_date": None}
+    try:
+        with open(pool_path(pool, "meta.json")) as f:
+            meta.update({k: v for k, v in json.load(f).items() if k in meta})
+            return meta
+    except (OSError, ValueError):
+        pass
+    try:
+        with open(pool_path(pool, "hits.txt")) as f:
+            meta["total"] = int(f.read().split()[0])
+    except (OSError, ValueError, IndexError):
+        pass
+    try:
+        meta["fetched"] = len(read_pmids(pool_path(pool, "pmids.txt")))
+    except OSError:
+        pass
+    try:
+        mtime = os.path.getmtime(pool_path(pool, "abstracts.json"))
+        meta["fetch_date"] = dt.date.fromtimestamp(mtime).isoformat() + " (file date)"
+    except OSError:
+        pass
+    return meta
+
+
+def write_pool_meta(folder, term, total, pmids):
+    """meta.json and pmids.txt for a freshly built pool."""
+    with open(os.path.join(folder, "pmids.txt"), "w") as f:
+        f.write("\n".join(pmids) + "\n")
+    with open(os.path.join(folder, "meta.json"), "w") as f:
+        json.dump({"term": term, "total": total, "fetched": len(pmids),
+                   "fetch_date": dt.date.today().isoformat()}, f, indent=1)
+
+
 def companions(documents, anchor, seed=42, k=2):
     """Two random companions for an anchor, reproducible across students."""
     pool = [d["pmid"] for d in documents if d["pmid"] != anchor]
@@ -297,6 +338,7 @@ def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=Fals
             f.write(term + "\n")
         with open(os.path.join(folder, "hits.txt"), "w") as f:
             f.write(f"{total}\n")
+        write_pool_meta(folder, term, total, pmids)
         with open(abstracts, "w") as f:
             json.dump(documents, f, indent=1, ensure_ascii=False)
         np.save(embeddings, vectors)
@@ -389,6 +431,18 @@ def rewrite_query(question, client=None, model=CHAT_MODEL, system=REWRITE_INSTRU
 
 # ---------------------------------------------------------------- prompts
 
+def question_block(question, gap=None):
+    """The research question, plus the student's proposed gap and what would
+    disprove it when given. Goes in the user message, so the editable system
+    prompts stay clean."""
+    s = f"QUESTION: {question}"
+    if gap and (gap.get("gap") or "").strip():
+        s += f"\nPROPOSED GAP: {gap['gap'].strip()}"
+        if (gap.get("disproof") or "").strip():
+            s += f"\nEVIDENCE THAT WOULD DISPROVE THE GAP: {gap['disproof'].strip()}"
+    return s
+
+
 def context_block(docs):
     return "\n\n".join(
         f"PMID {d['pmid']} | {d['first_author']} et al., {d['year']} | {d['journal']}\n"
@@ -404,10 +458,14 @@ For EACH paper in the context, judge how well it answers the question.
            and reports results.
   MEDIUM = partly relevant: related task or population, unclear design, or no results.
   LOW    = not relevant.
+An abstract that does not mention something is "not reported", not "not done":
+use null, never infer.
 
 Return ONLY a JSON array, one object per paper, in the order given, with keys:
   pmid            string
   grade           "HIGH" | "MEDIUM" | "LOW"
+  gap_relation    "addresses" | "partly" | "no" | "unclear": does this paper's own
+                  study do what the PROPOSED GAP says nobody has done? (null if no gap given)
   cohort          the cohort or data source named in the abstract, or null
   n               number of participants or scans in the evaluation, as written, or null
   headline_result the key quantitative result with numbers exactly as written, or null
@@ -423,7 +481,8 @@ rests on several papers, cite each: [PMID n; PMID m].
 Structure, under 350 words:
 1) Who validated what: one bullet per HIGH paper with cohort, size, AI task, headline result.
 2) What recurs across the studies: cohorts, AI tasks, comparison design.
-3) Gaps: what no paper in the context did.
+3) Gaps: what none of these abstracts did. Write "none of these abstracts",
+   never "no study": absence from the context is not absence from the literature.
 Be concrete with numbers. No preamble."""
 
 
@@ -433,11 +492,12 @@ to this paper must appear in, or be directly derivable from, the abstract.
 
 A claim may summarize several papers ("most studies ...", "cohorts ranged from ..."). Then
 judge only the part that concerns this paper: supported if the abstract is consistent with
-its share of the claim, partial if some detail is missing or loosely stated, unsupported
-only if the abstract contradicts the claim or contains nothing relevant to it.
+its share of the claim, partial if some detail is missing or loosely stated, insufficient
+if the abstract says nothing about this paper's share of the claim, unsupported only if
+the abstract contradicts the claim. "Not reported in this abstract" is not "not studied".
 
 Return ONLY a JSON object:
-{"verdict": "supported" | "partial" | "unsupported",
+{"verdict": "supported" | "partial" | "insufficient" | "unsupported",
  "quote": "verbatim abstract text that supports or contradicts the claim",
  "issue": "what the abstract does not state, or null"}"""
 
@@ -470,14 +530,11 @@ def _add(total, usage):
     total.calls += usage.calls
 
 
-def grade_relevance(question, docs, client=None, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL):
-    """Grade each document with whatever format the prompt asks for.
-    Returns (records_or_None, Usage, raw_text). records is None when the
-    reply is not a JSON array of objects, so the app can show the raw text.
-    Each record is the model's object plus "doc" (matched by pmid, else by
-    position) and, when an evidence_quote key exists, "quote_found"."""
-    client = client or anthropic_client()
-    user = f"QUESTION: {question}\n\nCONTEXT:\n{context_block(docs)}"
+def _grade_call(question, docs, client, system, model, gap=None, by_position=True):
+    """One grading call over `docs`. Returns (records_or_None, Usage, raw).
+    Records match the model's objects to documents by pmid; with by_position
+    a record whose pmid is unknown falls back to its position in the list."""
+    user = f"{question_block(question, gap)}\n\nCONTEXT:\n{context_block(docs)}"
     text, usage = _chat(client, system, user, model=model)
     items = None
     for attempt in range(2):
@@ -491,18 +548,83 @@ def grade_relevance(question, docs, client=None, system=GRADE_INSTRUCTIONS, mode
     if not isinstance(items, list) or not all(isinstance(x, dict) for x in items):
         return None, usage, text
     by_pmid = {d["pmid"]: d for d in docs}
-    records = []
+    records, seen = [], set()
     for i, item in enumerate(items):
         pmid = str(item.get("pmid", "")).strip()
-        d = by_pmid.get(pmid) or (docs[i] if i < len(docs) else None)
-        if d is None:
+        d = by_pmid.get(pmid) or (docs[i] if by_position and i < len(docs) else None)
+        if d is None or d["pmid"] in seen:
             continue
+        seen.add(d["pmid"])
         item["pmid"] = d["pmid"]
         item["doc"] = d
         if "evidence_quote" in item:
             item["quote_found"] = quote_in_abstract(item.get("evidence_quote"), d["abstract"])
         records.append(item)
     return records, usage, text
+
+
+def grade_relevance(question, docs, client=None, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL, gap=None):
+    """Grade each document with whatever format the prompt asks for.
+    Returns (records_or_None, Usage, raw_text). records is None when the
+    reply is not a JSON array of objects, so the app can show the raw text.
+    Each record is the model's object plus "doc" (matched by pmid, else by
+    position) and, when an evidence_quote key exists, "quote_found"."""
+    client = client or anthropic_client()
+    return _grade_call(question, docs, client, system, model, gap=gap, by_position=True)
+
+
+def estimate_grade_all(docs, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL, batch=10,
+                       out_tokens_per_doc=150, safety=1.4):
+    """Rough cost in USD of grading every document in batches. Measured
+    token counts run about 1.4x the chars/4 guess, hence the safety factor."""
+    n_batches = math.ceil(len(docs) / batch)
+    doc_tokens = sum(len(d["title"]) + len(d["abstract"]) + 60 for d in docs) / 4
+    in_tokens = doc_tokens + n_batches * (len(system) / 4 + 100)
+    out_tokens = len(docs) * out_tokens_per_doc
+    p = PRICE[model]
+    return safety * (in_tokens * p["input"] + out_tokens * p["output"]) / 1e6
+
+
+def grade_all(question, docs, client=None, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL,
+              gap=None, batch=10, workers=4, budget_usd=None, progress=None):
+    """Screen every document: the grader runs over batches of `batch`
+    papers, a few batches in parallel. Records are matched by pmid only, so
+    a short or reordered reply cannot mis-assign a grade. Returns
+    (records in corpus order, Usage, failed_pmids). A batch whose reply is
+    not JSON after one retry, or that is skipped because the running cost
+    passed budget_usd, lands in failed_pmids; the rest still come back."""
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Lock
+
+    client = client or anthropic_client()
+    chunks = [docs[i:i + batch] for i in range(0, len(docs), batch)]
+    results, total, lock, done = [None] * len(chunks), Usage(model), Lock(), 0
+    spent = [0.0]
+
+    def job(i):
+        with lock:
+            over = budget_usd is not None and spent[0] >= budget_usd
+        if over:
+            return i, None, Usage(model)
+        recs, usage, _ = _grade_call(question, chunks[i], client, system, model, gap=gap, by_position=False)
+        with lock:
+            spent[0] += usage.cost_usd
+        return i, recs, usage
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        for i, recs, usage in ex.map(job, range(len(chunks))):
+            results[i] = recs
+            _add(total, usage)
+            done += 1
+            if progress:
+                progress(done, len(chunks))
+    by_pmid = {}
+    for recs in results:
+        for r in recs or []:
+            by_pmid[r["pmid"]] = r
+    records = [by_pmid[d["pmid"]] for d in docs if d["pmid"] in by_pmid]
+    failed = [d["pmid"] for d in docs if d["pmid"] not in by_pmid]
+    return records, total, failed
 
 
 def _norm(s):
@@ -557,10 +679,10 @@ def select_records(records, include=("HIGH", "MEDIUM")):
 
 
 def synthesize(question, records, attach_full_high=True, client=None,
-               system=SYNTHESIS_INSTRUCTIONS, model=CHAT_MODEL):
+               system=SYNTHESIS_INSTRUCTIONS, model=CHAT_MODEL, gap=None):
     """Write the review from the selected records. Returns (text, Usage)."""
     client = client or anthropic_client()
-    user = f"QUESTION: {question}\n\nCONTEXT:\n{record_block(records, attach_full_high)}"
+    user = f"{question_block(question, gap)}\n\nCONTEXT:\n{record_block(records, attach_full_high)}"
     return _chat(client, system, user, model=model)
 
 
@@ -639,3 +761,68 @@ def verify_claims(review, documents, client=None, progress=None, workers=4,
             if progress:
                 progress(done, len(pairs))
     return rows, total
+
+
+# ---------------------------------------------------------------- Q6 gap assessment
+
+GAP_INSTRUCTIONS = """You judge whether a proposed research gap is still open, using ONLY the
+material given: the graded papers, the review with its verification table, and
+the search funnel (how many records PubMed matched, how many were fetched and
+screened).
+
+Rules:
+- "Not reported in this abstract" is not "not studied".
+- "Not retrieved" is not "no study exists": the corpus is only the fetched records.
+- A paper counts as a counterexample only if its OWN study does what the gap says
+  nobody has done. Name the closest ones even when they fall short, and say why.
+
+Return ONLY a JSON object:
+{"verdict": "contradicted" | "partly addressed" | "provisionally supported" | "insufficient evidence",
+ "counterexamples": [{"pmid": "string", "why": "one sentence"}],   (up to 3, closest first)
+ "uncertainty": "what would change the verdict, one or two sentences",
+ "search_limits": "what the funnel numbers imply for this verdict, one or two sentences"}"""
+
+GAP_VERDICTS = ("contradicted", "partly addressed", "provisionally supported", "insufficient evidence")
+
+
+def funnel_line(funnel, n_docs=None, screened=None):
+    """One sentence of retrieval numbers for prompts and the report."""
+    if not funnel:
+        return "Search funnel: not recorded."
+    parts = []
+    if funnel.get("total") is not None:
+        parts.append(f"PubMed matched {funnel['total']} records")
+    if funnel.get("fetched") is not None:
+        parts.append(f"{funnel['fetched']} fetched")
+    if n_docs is not None:
+        parts.append(f"{n_docs} with an abstract (the corpus)")
+    if screened is not None:
+        parts.append(f"{screened} screened by the grader")
+    s = "Search funnel: " + ", ".join(parts) if parts else "Search funnel: not recorded"
+    if funnel.get("fetch_date"):
+        s += f"; fetched {funnel['fetch_date']}"
+    return s + "."
+
+
+def assess_gap(question, gap, records, review, rows, funnel_text, client=None,
+               system=GAP_INSTRUCTIONS, model=CHAT_MODEL):
+    """One call that weighs the proposed gap against the strongest papers.
+    Returns (verdict_dict_or_None, Usage, raw_text)."""
+    client = client or anthropic_client()
+    table = "\n".join(f"{r['verdict']} | {r['pmid']} | {r['claim']}" for r in rows) or "(no claims checked)"
+    user = (f"{question_block(question, gap)}\n\n{funnel_text}\n\n"
+            f"GRADED PAPERS:\n{record_block(records, attach_full_high=True)}\n\n"
+            f"REVIEW:\n{review}\n\nVERIFICATION (verdict | pmid | claim):\n{table}")
+    text, usage = _chat(client, system, user, model=model)
+    out = None
+    for attempt in range(2):
+        try:
+            out = _parse_json(text)
+            break
+        except json.JSONDecodeError:
+            if attempt == 0:
+                text, u2 = _chat(client, system, user, model=model)
+                _add(usage, u2)
+    if not isinstance(out, dict):
+        return None, usage, text
+    return out, usage, text

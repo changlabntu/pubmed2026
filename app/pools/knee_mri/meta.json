@@ -1,0 +1,6 @@
+{
+ "term": "(knee) AND (MRI OR \"magnetic resonance imaging\") AND (\"deep learning\" OR \"artificial intelligence\" OR \"machine learning\" OR radiomics) AND (pain OR symptom*)",
+ "total": 119,
+ "fetched": 119,
+ "fetch_date": "2026-10-18"
+}

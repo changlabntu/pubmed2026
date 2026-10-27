@@ -12,8 +12,10 @@ Run:  streamlit run app.py
 
 import datetime as dt
 import json
+import math
 import os
 import re
+from collections import Counter
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -38,13 +40,14 @@ ss = st.session_state
 ss.setdefault("ledger", L.Ledger())
 ss.setdefault("client", None)
 
-STEPS = ["q1", "q2", "q3", "q4", "q5"]
+STEPS = ["q1", "q2", "q3", "q4", "q5", "q6"]
 RESULT_KEYS = {
     "q1": ["docs", "V", "V_title", "corpus_meta"],
     "q2": ["q2"],
     "q3": ["q3"],
     "q4": ["q4"],
     "q5": ["q5"],
+    "q6": ["q6"],
 }
 
 
@@ -72,14 +75,23 @@ def inputs_changed(step, signature):
         ss[key] = signature
 
 
-def run_button(label, key):
-    """A run button that refuses once the session cost cap is reached."""
+def run_button(label, key, estimate_usd=0.0):
+    """A run button that refuses once the session cost cap is reached, or when
+    a multi-call step is estimated to push the session past it."""
     clicked = st.button(label, key=key, type="primary")
-    if clicked and ss.ledger.cost_usd >= CAP_USD:
-        st.error(f"Cost cap reached: spent {100 * ss.ledger.cost_usd:.1f} cents of "
+    if not clicked:
+        return False
+    spent = ss.ledger.cost_usd
+    if spent >= CAP_USD:
+        st.error(f"Cost cap reached: spent {100 * spent:.1f} cents of "
                  f"{CAP_CENTS}. Raise the slider in the sidebar to continue.")
         return False
-    return clicked
+    if spent + estimate_usd > CAP_USD:
+        st.error(f"This step is estimated at {100 * estimate_usd:.1f} cents and you have spent "
+                 f"{100 * spent:.1f} of {CAP_CENTS}. Raise the cap in the sidebar, or switch the "
+                 f"full screen off.")
+        return False
+    return True
 
 
 def prompt_editor(name, default, label):
@@ -98,6 +110,41 @@ def prompt_editor(name, default, label):
 
 def comment_box(step):
     st.text_area("Comment", key=f"comment_{step}", height=80)
+
+
+def screen_summary(r4):
+    """For a Q4 result with a full screen: (one-line summary, HIGH records the
+    top-K search missed, all HIGH and MEDIUM records)."""
+    allr, failed = r4["all_records"], r4.get("screen_failed", [])
+    counts = Counter(L.grade_of(r) for r in allr)
+    top = {d["pmid"] for d, _ in r4["hits"]}
+    missed = [r for r in allr if L.grade_of(r) == "HIGH" and r["pmid"] not in top]
+    text = (f"Full screen of {len(allr) + len(failed)} papers: {counts.get('HIGH', 0)} HIGH, "
+            f"{counts.get('MEDIUM', 0)} MEDIUM, {counts.get('LOW', 0)} LOW"
+            + (f", {len(failed)} not graded" if failed else "") + ".")
+    return text, missed, [r for r in allr if L.grade_of(r) in ("HIGH", "MEDIUM")]
+
+
+def funnel_sentence(meta):
+    """Plain-language retrieval funnel for the corpus caption."""
+    f = meta.get("funnel") or {}
+    n_pool = meta.get("n_pool")
+    if f.get("total") is None or n_pool is None:
+        return ""
+    date = f" on {f['fetch_date']}" if f.get("fetch_date") else ""
+    fetched = f.get("fetched")
+    s = f"PubMed matched **{f['total']:,}** records{date}."
+    if fetched is not None:
+        s += f" Fetched **{fetched:,}**; **{n_pool:,}** have abstracts and form the corpus."
+        unseen = f["total"] - fetched
+        if unseen > 0:
+            s += f" The other **{unseen:,}** were never seen."
+    else:
+        s += f" **{n_pool:,}** have abstracts and form the corpus."
+    extra = len(meta.get("fixed", []))
+    if extra and len(ss.docs) > n_pool:
+        s += f" Plus the {len(ss.docs) - n_pool} paper(s) you added."
+    return s
 
 
 def paper_label(d):
@@ -119,7 +166,10 @@ def record_rows(records):
         for k, v in r.items():
             if k in ("doc", "pmid", "quote_found"):
                 continue
-            row[k] = v if isinstance(v, (str, int, float, type(None))) else json.dumps(v, ensure_ascii=False)
+            # everything as text: a column that mixes ints and strings (n = 160 vs
+            # "160 scans") otherwise trips Arrow when the table is drawn
+            row[k] = v if v is None or isinstance(v, str) else (
+                json.dumps(v, ensure_ascii=False) if isinstance(v, (list, dict)) else str(v))
         if "quote_found" in r:
             row["quote found"] = "yes" if r["quote_found"] else "NO"
         rows.append(row)
@@ -170,6 +220,9 @@ DEMO = {
              'AND ("low-dose CT" OR "low-dose computed tomography") AND screening',
     "pmids": "41308576, 42229468, 33708918",
     "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+    "gap": "No AI system for lung cancer screening has been validated prospectively in a real screening cohort.",
+    "disproof": "A paper whose own study evaluates an AI system on a screening cohort with a cancer "
+                "reference standard, prospectively or on held-out data from a different programme.",
 }
 
 with st.sidebar:
@@ -186,9 +239,35 @@ with st.sidebar:
                   help="Switched off for the class. The instructor can enable it in app.py.")
     MODEL = L.MODELS[model_label]
     st.subheader("Cost cap")
-    CAP_CENTS = st.slider("Stop making calls after (cents)", 1, 50, 5, key="cap_cents")
+    CAP_CENTS = st.slider("Stop making calls after (cents)", 1, 50, 10, key="cap_cents")
     CAP_USD = CAP_CENTS / 100
     totals_box = st.container()
+
+# ---------------------------------------------------------------- Q0
+
+st.header("Q0. Define the gap")
+st.markdown(
+    "A review starts with a question and a claim about what nobody has done yet. "
+    "Write both, and say what kind of paper would prove the claim wrong. The grader, "
+    "the synthesis and the final verdict in Q6 all read these three lines."
+)
+for k in ("question", "gap", "disproof"):
+    ss.setdefault(k, DEMO[k])
+QUESTION = st.text_input("Research question", key="question").strip()
+c1, c2 = st.columns(2)
+GAP = c1.text_area("Proposed gap (what nobody has done)", key="gap", height=90).strip()
+DISPROOF = c2.text_area("What evidence would disprove it", key="disproof", height=90).strip()
+ss.active_question = QUESTION
+ss.active_gap = {"gap": GAP, "disproof": DISPROOF}
+GAPCTX = ss.active_gap
+
+
+def use_pool_question(papers):
+    """Button callback: copy a shipped pool's question and gap into Q0."""
+    ss.question = papers.get("question", "")
+    ss.gap = papers.get("gap", "")
+    ss.disproof = papers.get("disproof", "")
+
 
 # ---------------------------------------------------------------- Q1
 
@@ -206,6 +285,8 @@ if source == "Shipped pool":
     POOL = st.selectbox("Pool", pools, index=pools.index(L.DEFAULT_POOL) if L.DEFAULT_POOL in pools else 0, key="pool")
     PAPERS = L.load_papers(POOL)
     st.caption(f"`{L.pool_query(POOL)}`")
+    st.caption(f"Built for: _{PAPERS['question']}_")
+    st.button("Use this pool's question and gap in Q0", key="use_pool_q", on_click=use_pool_question, args=(PAPERS,))
     q1_sig = ("pool", POOL)
     POOL_KEY = POOL
 else:
@@ -241,7 +322,7 @@ if run_button("Build corpus", "btn_q1"):
             docs, V, usage, src = cached_corpus(POOL)
             if docs and not all("citations" in d for d in docs):
                 L.ensure_citations(docs, L.pool_path(POOL, "abstracts.json"))
-        meta = {"pool": POOL, "query": L.pool_query(POOL), "source": src}
+        meta = {"pool": POOL, "query": L.pool_query(POOL), "source": src, "funnel": L.pool_meta(POOL)}
     elif not OWN_QUERY.strip():
         st.warning("Type a PubMed query first.")
         docs = None
@@ -252,11 +333,13 @@ if run_button("Build corpus", "btn_q1"):
                 OWN_QUERY, OWN_RETMAX, OWN_EXCLUDE, progress=status.write)
             status.update(label="Pool built", state="complete", expanded=False)
             meta = {"pool": pool_id, "query": OWN_QUERY.strip(), "retmax": OWN_RETMAX,
-                    "exclude": OWN_EXCLUDE, "source": src}
+                    "exclude": OWN_EXCLUDE, "source": src, "funnel": L.pool_meta(pool_id)}
         except Exception as e:  # noqa: BLE001
             status.update(label="Pool build failed", state="error")
             st.error(str(e))
             docs = None
+    if docs:
+        meta["n_pool"] = len(docs)   # before the student's own papers are appended
     if docs and len(FIXED) == 3:
         with st.spinner("Adding your three papers ..."):
             docs, V, u_extra, missing = L.add_papers(docs, V, FIXED)
@@ -340,6 +423,8 @@ else:
     years = sorted({d["year"] for d in docs if d.get("year")})
     st.success(f"{len(docs)} documents, vectors {V.shape[0]} x {V.shape[1]}, loaded from {meta['source']}. "
                f"Years {years[0]} to {years[-1]}.")
+    if funnel_sentence(meta):
+        st.markdown(funnel_sentence(meta))
     paper_map(docs, V, meta["pool"], fixed=meta.get("fixed", ()))
 
 
@@ -352,21 +437,25 @@ def render_totals():
         with st.expander("Per step"):
             for step, u in ss.ledger.entries:
                 st.caption(f"{step} ({u.model}): {u.input_tokens} in / {u.output_tokens} out, {100 * u.cost_usd:.3f}c")
-        st.download_button("Download report (.md)", build_report(),
+        ss.report_md = build_report()   # also readable by the headless tests
+        st.download_button("Download report (.md)", ss.report_md,
                            file_name=f"module1_report_{dt.date.today()}.md", mime="text/markdown")
 
 
 def build_report():
     lines = [f"# Module 1 literature review report", f"Date: {dt.date.today()}", ""]
+    gap = ss.get("active_gap", {})
+    lines += ["## Q0. Question and gap", "",
+              f"- Research question: {ss.get('active_question', '')}",
+              f"- Proposed gap: {gap.get('gap', '')}",
+              f"- What would disprove it: {gap.get('disproof', '')}", ""]
     meta = ss.get("corpus_meta")
     lines += ["## Q1. Corpus", ""]
     if meta:
         lines += [f"- Pool: `{meta['pool']}`", f"- PubMed query: `{meta['query']}`",
                   f"- Documents: {len(ss.docs)}",
+                  f"- {L.funnel_line(meta.get('funnel'), meta.get('n_pool'))}",
                   f"- Anchor and companions: {', '.join(meta.get('fixed', [])) or 'not given'}", ""]
-    lines.append("")
-    if "docs" in ss:
-        lines += ["## Research question", "", ss.get("active_question", ""), ""]
     for step, title in (("q2", "Q2. Grade three fixed papers"), ("q3", "Q3. Anchor's neighbours"),
                         ("q4", "Q4. Search with the question")):
         lines += [f"## {title}", ""]
@@ -384,6 +473,12 @@ def build_report():
                 lines += ["Raw reply (not JSON):", "", "```", res["raw"], "```", ""]
             else:
                 lines += [md_table(record_rows(res["records"]))]
+            if res.get("all_records") is not None:
+                text, missed, kept_all = screen_summary(res)
+                lines += ["", text, "",
+                          "HIGH papers the top-K search missed: "
+                          + (", ".join(f"{r['pmid']} ({r['doc']['first_author']} {r['doc']['year']})" for r in missed) or "none"),
+                          "", "All HIGH and MEDIUM records from the full screen:", "", md_table(record_rows(kept_all))]
         lines += [f"Comment: {ss.get(f'comment_{step}', '')}", ""]
     lines += ["## Q5. Review and verification", ""]
     res = ss.get("q5")
@@ -394,10 +489,27 @@ def build_report():
                   md_table([{"verdict": r["verdict"], "pmid": r["pmid"], "claim": r["claim"],
                              "issue": r.get("issue")} for r in res["rows"]])]
     lines += [f"Comment: {ss.get('comment_q5', '')}", ""]
+    lines += ["## Q6. Gap assessment", ""]
+    res = ss.get("q6")
+    if res:
+        for k, v in res["settings"].items():
+            lines.append(f"- {k}: {v}")
+        lines += [f"- model: {res['model']}", ""]
+        out = res["result"]
+        if out is None:
+            lines += ["Raw reply (not JSON):", "", "```", res["raw"], "```", ""]
+        else:
+            cx = out.get("counterexamples") or []
+            lines += [f"**Verdict: {out.get('verdict', '?')}**", "",
+                      md_table([{"pmid": c.get("pmid"), "why": c.get("why")} for c in cx if isinstance(c, dict)]),
+                      f"Remaining uncertainty: {out.get('uncertainty', '')}", "",
+                      f"Search limits: {out.get('search_limits', '')}", ""]
+    lines += [f"Comment: {ss.get('comment_q6', '')}", ""]
     lines += ["## Prompts used", ""]
     for name, default, label in (("grade", L.GRADE_INSTRUCTIONS, "Grading"),
                                  ("synth", L.SYNTHESIS_INSTRUCTIONS, "Synthesis"),
-                                 ("verify", L.VERIFY_INSTRUCTIONS, "Verifier")):
+                                 ("verify", L.VERIFY_INSTRUCTIONS, "Verifier"),
+                                 ("gap", L.GAP_INSTRUCTIONS, "Gap")):
         text = ss.get(f"prompt_{name}", default)
         tag = "default" if text.strip() == default.strip() else "EDITED"
         lines += [f"### {label} prompt ({tag})", "", "```", text, "```", ""]
@@ -422,9 +534,6 @@ st.markdown(
     "The grading prompt below decides the scale and the return format. Edit it freely: "
     "the table shows whatever keys the model returns."
 )
-default_q = PAPERS["question"] if PAPERS else DEMO["question"]
-QUESTION = st.text_input("Research question", value=default_q, key=f"question_{POOL_KEY}").strip()
-ss.active_question = QUESTION
 fixed_in_pool = [p for p in meta.get("fixed", []) if p in by]
 if len(fixed_in_pool) == 3:
     ANCHOR, COMPANIONS = fixed_in_pool[0], fixed_in_pool[1:]
@@ -436,16 +545,16 @@ else:
                           format_func=lambda p: paper_label(by[p]), key=f"anchor_{POOL_KEY}")
     COMPANIONS = L.companions(docs, ANCHOR)
 GRADE_PROMPT = prompt_editor("grade", L.GRADE_INSTRUCTIONS, "Grading prompt, shared by Q2, Q3 and Q4 (edit me)")
-inputs_changed("q2", (QUESTION, ANCHOR, tuple(COMPANIONS), GRADE_PROMPT))
+inputs_changed("q2", (QUESTION, GAP, DISPROOF, ANCHOR, tuple(COMPANIONS), GRADE_PROMPT))
 
 fixed = [by[ANCHOR]] + [by[p] for p in COMPANIONS]
 for d, tag in zip(fixed, ["anchor", "companion", "companion"]):
     st.markdown(paper_line(d, tag=tag))
 if not QUESTION:
-    st.info("Type a research question first.")
+    st.info("Type a research question in Q0 first.")
 elif run_button("Grade", "btn_q2"):
     with st.spinner("Grading ..."):
-        recs, usage, raw = L.grade_relevance(QUESTION, fixed, client(), system=GRADE_PROMPT, model=MODEL)
+        recs, usage, raw = L.grade_relevance(QUESTION, fixed, client(), system=GRADE_PROMPT, model=MODEL, gap=GAPCTX)
     ss.ledger.add("Q2 grade", usage)
     ss.q2 = {"records": recs, "raw": raw, "model": MODEL,
              "settings": {"question": QUESTION, "anchor": ANCHOR, "companions": ", ".join(COMPANIONS)}}
@@ -477,7 +586,7 @@ if QUESTION and run_button("Find similar", "btn_q3"):
     nn = L.nearest(ANCHOR, docs, V_used, k=K3)
     trio = [by[ANCHOR], nn[0][0], nn[1][0]]
     with st.spinner("Grading ..."):
-        recs, usage, raw = L.grade_relevance(QUESTION, trio, client(), system=GRADE_PROMPT, model=MODEL)
+        recs, usage, raw = L.grade_relevance(QUESTION, trio, client(), system=GRADE_PROMPT, model=MODEL, gap=GAPCTX)
     ss.ledger.add("Q3 grade", usage)
     ss.q3 = {"records": recs, "raw": raw, "model": MODEL, "hits": nn,
              "settings": {"anchor": ANCHOR, "k": K3, "embedded": EMBED_MODE}}
@@ -496,14 +605,20 @@ st.markdown(
     "Now the question itself does the retrieving. Three strategies: **embedding** "
     "(meaning), **keyword** (BM25 word overlap, no model), or **hybrid** (both rankings "
     "fused). Optionally let the model rewrite the question into a search string first. "
-    "Every hit is graded."
+    "Every hit is graded. Or switch on the full screen and grade **every** paper in the "
+    "corpus, ten per call, to see what the top-K search missed."
 )
-c1, c2, c3 = st.columns([2, 1, 1])
+c1, c2, c3, c4 = st.columns([2, 1, 1, 1])
 STRATEGY = c1.radio("Strategy", ["Embedding", "Keyword", "Hybrid"], horizontal=True, key="strategy")
 REWRITE = c2.toggle("Rewrite the question first", value=False, key="rewrite")
 K4 = c3.slider("Hits to grade", 3, 20, 10, key="k4")
-inputs_changed("q4", (QUESTION, STRATEGY, REWRITE, K4, GRADE_PROMPT))
-if QUESTION and run_button("Search", "btn_q4"):
+SCREEN_ALL = c4.toggle("Also screen every paper", value=False, key="screen_all")
+N_BATCHES = math.ceil(len(docs) / 10)
+EST_SCREEN = L.estimate_grade_all(docs, GRADE_PROMPT, MODEL) if SCREEN_ALL else 0.0
+if SCREEN_ALL:
+    c4.caption(f"{len(docs)} papers, {N_BATCHES} calls, about {100 * EST_SCREEN:.1f} cents")
+inputs_changed("q4", (QUESTION, STRATEGY, REWRITE, K4, SCREEN_ALL, GRADE_PROMPT))
+if QUESTION and run_button("Search", "btn_q4", estimate_usd=EST_SCREEN):
     with st.spinner("Searching and grading ..."):
         q_text = QUESTION
         if REWRITE:
@@ -517,10 +632,22 @@ if QUESTION and run_button("Search", "btn_q4"):
             hits, u1 = L.hybrid_search(q_text, docs, V, k=K4)
         if u1:
             ss.ledger.add("Q4 embed", u1)
-        recs, u2, raw = L.grade_relevance(QUESTION, [d for d, _ in hits], client(), system=GRADE_PROMPT, model=MODEL)
+        recs, u2, raw = L.grade_relevance(QUESTION, [d for d, _ in hits], client(), system=GRADE_PROMPT,
+                                          model=MODEL, gap=GAPCTX)
         ss.ledger.add("Q4 grade", u2)
+    all_recs, failed = None, []
+    if SCREEN_ALL:
+        bar = st.progress(0.0, text="Screening every paper ...")
+        all_recs, u3, failed = L.grade_all(
+            QUESTION, docs, client(), system=GRADE_PROMPT, model=MODEL, gap=GAPCTX,
+            budget_usd=max(0.0, CAP_USD - ss.ledger.cost_usd),
+            progress=lambda i, n: bar.progress(i / n, text=f"Screening batch {i} of {n}"))
+        bar.empty()
+        ss.ledger.add("Q4 screen all", u3)
     ss.q4 = {"records": recs, "raw": raw, "model": MODEL, "hits": hits,
-             "settings": {"strategy": STRATEGY, "search text": q_text, "k": K4}}
+             "all_records": all_recs, "screen_failed": failed,
+             "settings": {"strategy": STRATEGY, "search text": q_text, "k": K4,
+                          "screened": len(docs) if SCREEN_ALL else K4}}
 if "q4" in ss:
     r4 = ss.q4
     if r4["settings"]["search text"] != QUESTION:
@@ -530,8 +657,17 @@ if "q4" in ss:
     for d, s in r4["hits"]:
         st.markdown(paper_line(d, s, tag="anchor" if d["pmid"] == ANCHOR else ""))
     show_grades(r4)
-    if r4["records"] is not None:
-        n_high = sum(L.grade_of(r) == "HIGH" for r in r4["records"])
+    if r4.get("all_records") is not None:
+        text, missed, kept_all = screen_summary(r4)
+        st.markdown(f"**{text}**")
+        if r4.get("screen_failed"):
+            st.warning("Not graded (the model did not return JSON, or the cap stopped the screen): "
+                       + ", ".join(r4["screen_failed"]))
+        st.markdown(f"HIGH papers the top-{len(r4['hits'])} search missed: **{'none' if not missed else len(missed)}**")
+        for r in missed:
+            st.markdown(paper_line(r["doc"]))
+        with st.expander(f"All {len(kept_all)} HIGH and MEDIUM records from the full screen"):
+            st.dataframe(record_rows(kept_all), width="stretch", hide_index=True)
     comment_box("q4")
 
 # ---------------------------------------------------------------- Q5
@@ -540,18 +676,25 @@ st.header("Q5. Synthesize and verify")
 st.markdown(
     "The model writes a short review from the papers you include, citing PMIDs. "
     "Then every cited sentence goes back to the model with only the abstract it cites, "
-    "and is marked supported, partial, or unsupported."
+    "and is marked supported, partial, insufficient (the abstract says nothing about it), "
+    "or unsupported (the abstract contradicts it)."
 )
-c1, c2 = st.columns(2)
+c1, c2, c3 = st.columns([2, 2, 1])
 INCLUDE = c1.multiselect("Include papers graded", ["HIGH", "MEDIUM", "LOW"], default=["HIGH", "MEDIUM"], key="include")
 ATTACH = c2.toggle("Attach full abstracts for HIGH papers (others as the grader's record)", value=True, key="attach")
+HAVE_SCREEN = "q4" in ss and ss.q4.get("all_records") is not None
+if HAVE_SCREEN:
+    SOURCE5 = c3.radio("Papers from", ["Full screen", "Top-K"], horizontal=True, key="source5")
+else:
+    SOURCE5 = "Top-K"
 SYN_PROMPT = prompt_editor("synth", L.SYNTHESIS_INSTRUCTIONS, "Synthesis prompt (edit me)")
 VER_PROMPT = prompt_editor("verify", L.VERIFY_INSTRUCTIONS, "Verifier prompt (edit me)")
-inputs_changed("q5", (tuple(INCLUDE), ATTACH, SYN_PROMPT, VER_PROMPT))
+inputs_changed("q5", (tuple(INCLUDE), ATTACH, SOURCE5, SYN_PROMPT, VER_PROMPT))
 if "q4" not in ss or ss.q4["records"] is None:
     st.info("Run Q4 with a prompt that returns JSON first. The review is built from its records.")
 elif run_button("Summarize and verify", "btn_q5"):
-    kept, had_grades = L.select_records(ss.q4["records"], include=tuple(INCLUDE))
+    base = ss.q4["all_records"] if SOURCE5 == "Full screen" else ss.q4["records"]
+    kept, had_grades = L.select_records(base, include=tuple(INCLUDE))
     if not had_grades:
         st.warning("No record carries a `grade` key, so every Q4 paper goes into the review.")
     if not kept:
@@ -559,27 +702,74 @@ elif run_button("Summarize and verify", "btn_q5"):
     else:
         with st.spinner("Writing the review ..."):
             review, u1 = L.synthesize(QUESTION, kept, attach_full_high=ATTACH, client=client(),
-                                      system=SYN_PROMPT, model=MODEL)
+                                      system=SYN_PROMPT, model=MODEL, gap=GAPCTX)
         ss.ledger.add("Q5 synthesize", u1)
         bar = st.progress(0.0, text="Verifying claims ...")
         rows, u2 = L.verify_claims(review, docs, client(), system=VER_PROMPT, model=MODEL,
                                    progress=lambda i, n: bar.progress(i / n, text=f"Verifying claim {i} of {n}"))
         bar.empty()
         ss.ledger.add("Q5 verify", u2)
-        ss.q5 = {"review": review, "rows": rows, "model": MODEL,
-                 "settings": {"included": ", ".join(INCLUDE), "papers": len(kept), "full HIGH abstracts": ATTACH}}
+        clear_from("q6")   # a new review invalidates the verdict built on the old one
+        ss.q5 = {"review": review, "rows": rows, "model": MODEL, "kept": kept,
+                 "settings": {"included": ", ".join(INCLUDE), "source": SOURCE5, "papers": len(kept),
+                              "full HIGH abstracts": ATTACH}}
 if "q5" in ss:
     st.caption(f"Written and verified by {ss.q5['model']} from {ss.q5['settings']['papers']} papers")
     st.markdown(ss.q5["review"])
     rows = ss.q5["rows"]
-    counts = {v: sum(r["verdict"] == v for r in rows) for v in ("supported", "partial", "unsupported")}
-    st.markdown(f"**{len(rows)} claim checks: {counts['supported']} supported, "
-                f"{counts['partial']} partial, {counts['unsupported']} unsupported**")
+    counts = {v: sum(r["verdict"] == v for r in rows) for v in ("supported", "partial", "insufficient", "unsupported")}
+    st.markdown(f"**{len(rows)} claim checks: {counts['supported']} supported, {counts['partial']} partial, "
+                f"{counts['insufficient']} insufficient, {counts['unsupported']} unsupported**")
     st.dataframe(
         [{"Verdict": r["verdict"], "PMID": r["pmid"], "Claim": r["claim"], "Issue": r.get("issue")} for r in rows],
         width="stretch", hide_index=True,
     )
     comment_box("q5")
+
+# ---------------------------------------------------------------- Q6
+
+st.header("Q6. Is the gap still open?")
+st.markdown(
+    "One call weighs the gap you wrote in Q0 against the strongest papers, the verified "
+    "review, and the search funnel. Four verdicts: **contradicted**, **partly addressed**, "
+    "**provisionally supported**, **insufficient evidence**. Read the counterexamples "
+    "yourself before you believe the verdict."
+)
+GAP_PROMPT = prompt_editor("gap", L.GAP_INSTRUCTIONS, "Gap prompt (edit me)")
+inputs_changed("q6", (GAP_PROMPT,))
+if "q5" not in ss:
+    st.info("Run Q5 first. The verdict is built from its review and verification table.")
+elif not GAP:
+    st.info("Write a proposed gap in Q0 first.")
+elif run_button("Assess the gap", "btn_q6"):
+    funnel_text = L.funnel_line(meta.get("funnel"), meta.get("n_pool"), ss.q4["settings"].get("screened"))
+    with st.spinner("Weighing the gap ..."):
+        out, usage, raw = L.assess_gap(QUESTION, GAPCTX, ss.q5["kept"], ss.q5["review"], ss.q5["rows"],
+                                       funnel_text, client(), system=GAP_PROMPT, model=MODEL)
+    ss.ledger.add("Q6 assess gap", usage)
+    ss.q6 = {"result": out, "raw": raw, "model": MODEL,
+             "settings": {"gap": GAP, "disproof": DISPROOF, "papers": len(ss.q5["kept"]), "funnel": funnel_text}}
+if "q6" in ss:
+    r6 = ss.q6
+    st.caption(f"Judged by {r6['model']} from {r6['settings']['papers']} papers. {r6['settings']['funnel']}")
+    if r6["result"] is None:
+        st.warning("The reply was not a JSON object. Read it as text, or fix the prompt and run again.")
+        st.code(r6["raw"])
+    else:
+        out = r6["result"]
+        st.subheader(f"Verdict: {out.get('verdict', '?')}")
+        cx = out.get("counterexamples") or []
+        st.markdown("**Closest counterexamples**" if cx else "**No counterexamples named.**")
+        for c in cx if isinstance(cx, list) else []:
+            pmid = str(c.get("pmid", "")) if isinstance(c, dict) else str(c)
+            d = by.get(pmid)
+            why = c.get("why", "") if isinstance(c, dict) else ""
+            st.markdown((paper_line(d) if d else f"**{pmid}** (not in the corpus)") + f": {why}")
+        st.markdown(f"**Remaining uncertainty:** {out.get('uncertainty', '')}")
+        st.markdown(f"**Search limits:** {out.get('search_limits', '')}")
+        with st.expander("Raw model reply"):
+            st.code(r6["raw"])
+    comment_box("q6")
 
 st.divider()
 st.markdown("When you are done, download the report from the sidebar. It holds every setting, "

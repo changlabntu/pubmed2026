@@ -1,7 +1,12 @@
 {
  "question": "Can AI detect or predict pain symptoms from knee MRI images?",
+ "gap": "No AI model has predicted a patient's reported knee pain, rather than structural damage, from MRI alone.",
+ "disproof": "A paper whose own study trains or tests a model on knee MRI with patient-reported pain as the target and reports its accuracy.",
  "anchor": "32055951",
- "companions": ["40885690", "33337584"],
+ "companions": [
+  "40885690",
+  "33337584"
+ ],
  "companion_seed": 42,
  "note": "anchor = Chang 2020, convolutional Siamese network assessing knee pain from MR, AUC 0.808. companions = random.Random(42).sample(pool minus anchor, 2)"
 }
