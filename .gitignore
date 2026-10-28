@@ -6,3 +6,6 @@ llm-zoomcamp/
 *.db
 .ipynb_checkpoints/
 __pycache__/
+
+# model output from tests/scenarios.py; regenerated on every run
+tests/scenario_results/

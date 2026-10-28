@@ -1,0 +1,13 @@
+{
+ "name": "AI for lung cancer screening on low-dose CT",
+ "note": "Same literature as the shipped lung_ct pool.",
+ "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+ "gap": "No AI system for lung cancer screening has been validated prospectively in a real screening cohort.",
+ "disproof": "A paper whose own study evaluates an AI system on a screening cohort with a cancer reference standard, prospectively or on held-out data from a different programme.",
+ "query": "\"lung cancer\" AND (\"deep learning\" OR \"artificial intelligence\") AND (\"low-dose CT\" OR \"low-dose computed tomography\") AND screening",
+ "pmids": [
+  "41308576",
+  "42229468",
+  "33708918"
+ ]
+}

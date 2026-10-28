@@ -1,0 +1,13 @@
+{
+ "name": "AI prediction of total knee replacement",
+ "note": "Anchor: Demanse 2026, 20-year insurance records from Israel. Companions: Salman 2026 (routine hospital radiographs, internal test only) and Leung 2020 (OAI research cohort), the contrast case.",
+ "question": "Has an AI model that predicts future total knee replacement in knee osteoarthritis been validated on real clinical data rather than research cohorts?",
+ "gap": "No AI model that predicts total knee replacement has been externally validated on routine clinical data (health records, insurance claims, or hospital imaging); models are built and tested on research cohorts such as OAI and MOST.",
+ "disproof": "A paper whose own study trains or tests a TKR prediction model on routine clinical data and evaluates it on patients from a different hospital, health system, or time period, with TKR as the outcome.",
+ "query": "(\"total knee replacement\" OR \"total knee arthroplasty\") AND (\"machine learning\" OR \"deep learning\" OR \"artificial intelligence\") AND predict* AND osteoarthritis",
+ "pmids": [
+  "41845377",
+  "42930625",
+  "32573386"
+ ]
+}

@@ -1,34 +1,42 @@
 # Homework: Module 1
 
-Open the app, run the steps from Q0 to Q6, and **download the report** from
-the sidebar. The report is your submission. Before you download it, fill the
-comment box under each step; empty comments mean an incomplete homework.
+Open the app, run the four moves, and **download the report** from the
+sidebar. The report is your submission. Before you download it, fill the
+comment box under moves 2, 3 and 4. The questions each box asks are
+written above it on the page and repeated below. Empty comments mean an
+incomplete homework.
+
+Rename the file `nameA_idA_nameB_idB.md`, with the names and student IDs of
+both partners, and upload it to
+<https://www.dropbox.com/request/hyjoadqw1wlpcr0shtjw>.
 
 ## Required run
 
-0. Q0: keep the default question and gap for the first pass. Later, rewrite
-   the gap in your own words and say what paper would disprove it.
-1. Q1: use the pool your instructor assigned, or your own PubMed query if told so.
-   Note the funnel line: how many records PubMed matched and how many you fetched.
-2. Q2: keep the default question first. Grade. Then change **one thing** in
-   the grading prompt (the scale, a new return field, a stricter HIGH rule)
-   and grade again. Your comment says what you changed and what moved.
-3. Q3: run once. Your comment says whether the neighbours graded higher than
-   the random companions, and why that might be.
-4. Q4: run **two strategies** (for example Embedding, then Keyword). Your
-   comment says which found the paper you would have chosen, and where the
-   anchor ranked under each.
-   Then switch on **Also screen every paper** and run once more. Your comment
-   names any HIGH paper the top-K search missed.
-5. Q5: run once. Pick one `partial`, `insufficient` or `unsupported` row, read
-   that abstract, and say in your comment whether you agree with the verifier.
-6. Q6: run once. Your comment says whether you agree with the verdict, and
-   names the single paper that comes closest to closing the gap.
+1. **The claim.** Keep the question set your instructor assigned for the
+   first pass. Later, rewrite the gap in your own words and say what paper
+   would refute it.
+2. **Start from three papers.** Use the set's three PMIDs. Score them. Your
+   comment says whether the three fell where you expected on the map and in
+   the panels, and why the anchor got the score it did.
+   Then change **one thing** in the scoring prompt (a band's wording, a new
+   return field, a stricter rule for 1-2) and score again. Say what you
+   changed and what moved.
+3. **Gather evidence.** Run it once. Your comment says which of the two
+   searches found the paper you would have chosen, and names one red
+   (antithesis) panel you disagree with, with the reason.
+4. **The argument.** Run it once with the one-line prompts as given. Your
+   comment says whether the synthesis narrowed the gap, conceded it, or kept
+   it as written, and whether you agree with the verdict. Then add **one
+   rule** to the WHAT TO DO box of the argument prompt (the red box), for
+   example that the model must never write "no study", only "none of these
+   abstracts", and run again. Say what changed. Finally pick one
+   `not supported` or `can't tell` row, read that abstract, and say whether
+   you agree with the verifier.
 
-## Reflection (in the Q5 comment, three sentences)
+## Reflection (in the move 4 comment, three sentences)
 
-Which single change you made had the largest effect on the final review, and
-how do you know?
+Which single change you made had the largest effect on the argument, and how
+do you know?
 
 ## Rules
 

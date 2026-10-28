@@ -1,0 +1,152 @@
+[
+ {
+  "id": "lung_ct_prospective",
+  "name": "AI for lung cancer screening on low-dose CT",
+  "question": "Who has validated an AI system for lung cancer screening in a real screening cohort?",
+  "gap": "No AI system for lung cancer screening has been validated prospectively in a real screening cohort.",
+  "disproof": "A paper whose own study evaluates an AI system on a screening cohort with a cancer reference standard, prospectively or on held-out data from a different programme.",
+  "query": "\"lung cancer\" AND (\"deep learning\" OR \"artificial intelligence\") AND (\"low-dose CT\" OR \"low-dose computed tomography\") AND screening",
+  "pmids": [
+   "41308576",
+   "42229468",
+   "33708918"
+  ],
+  "expected": "gap narrowed",
+  "note": "Control: the shipped set. Retrospective screening-cohort validations exist (LUNA25, UKLS); prospective cancer-referenced ones do not appear in the corpus."
+ },
+ {
+  "id": "dr_primary_care",
+  "name": "Autonomous AI for diabetic retinopathy screening in primary care",
+  "question": "Has an autonomous deep learning system for diabetic retinopathy been validated prospectively in primary care?",
+  "gap": "No autonomous AI system for diabetic retinopathy screening has been validated prospectively in primary care against a reference-standard reading.",
+  "disproof": "A paper whose own study enrols patients prospectively in primary care, runs the AI without clinician oversight, and compares its output to a reference standard such as Wisconsin Reading Center grading.",
+  "query": "\"diabetic retinopathy\" AND (\"deep learning\" OR \"artificial intelligence\" OR autonomous) AND (\"primary care\" OR prospective) AND (screening OR detection)",
+  "pmids": [
+   "31304320",
+   null,
+   null
+  ],
+  "expected": "gap closed",
+  "note": "Abramoff 2018 (npj Digital Medicine), PMID 31304320, is the prospective pivotal trial of IDx-DR in primary care."
+ },
+ {
+  "id": "llm_vs_physician",
+  "name": "LLM answers to patient questions versus physicians",
+  "question": "Has a large language model's answers to real patient questions been compared with physicians' answers by blinded clinical raters?",
+  "gap": "No study has had blinded clinicians rate chatbot and physician responses to the same real patient questions for quality and empathy.",
+  "disproof": "A paper whose own study takes real patient questions, obtains both physician and chatbot answers, and has blinded clinicians rate both.",
+  "query": "(ChatGPT OR \"large language model\") AND (patient questions OR \"patient queries\") AND (physician OR physicians) AND (quality OR empathy)",
+  "pmids": [
+   "37115527",
+   null,
+   null
+  ],
+  "expected": "gap closed",
+  "note": "Ayers 2023 (JAMA Internal Medicine) did exactly this on r/AskDocs questions."
+ },
+ {
+  "id": "smartwatch_af",
+  "name": "Smartwatch detection of atrial fibrillation at scale",
+  "question": "Has smartwatch-based atrial fibrillation detection been evaluated in a large prospective cohort?",
+  "gap": "No consumer smartwatch algorithm for atrial fibrillation has been evaluated prospectively in a cohort of more than 100,000 participants with ECG patch confirmation.",
+  "disproof": "A paper whose own study enrols over 100,000 smartwatch users prospectively and confirms irregular-pulse notifications against an ambulatory ECG patch.",
+  "query": "(smartwatch OR \"Apple Watch\" OR wearable) AND \"atrial fibrillation\" AND (detection OR notification) AND (prospective OR cohort)",
+  "pmids": [
+   "31722151",
+   null,
+   null
+  ],
+  "expected": "gap closed",
+  "note": "Perez 2019 (NEJM), the Apple Heart Study, 419,297 participants with ECG patch confirmation."
+ },
+ {
+  "id": "ecg_ai_low_ef_rct",
+  "name": "ECG-AI for low ejection fraction in a pragmatic trial",
+  "question": "Has an AI electrocardiogram algorithm for low ejection fraction been tested in a randomized trial in routine care?",
+  "gap": "No AI-ECG tool for detecting low ejection fraction has been evaluated in a randomized clinical trial embedded in routine primary care.",
+  "disproof": "A paper whose own study randomizes clinicians or patients in routine care to AI-ECG output versus usual care and reports new low-EF diagnoses.",
+  "query": "(electrocardiogram OR ECG) AND (\"artificial intelligence\" OR \"deep learning\") AND (\"ejection fraction\" OR \"ventricular dysfunction\") AND (randomized OR randomised OR trial)",
+  "pmids": [
+   "33958795",
+   null,
+   null
+  ],
+  "expected": "gap closed",
+  "note": "Yao 2021 (Nature Medicine), the EAGLE pragmatic cluster-randomized trial at Mayo."
+ },
+ {
+  "id": "sepsis_ml_rct",
+  "name": "Machine-learning sepsis early warning and mortality",
+  "question": "Has a machine-learning sepsis prediction system been shown to reduce mortality in a randomized trial?",
+  "gap": "No machine-learning sepsis early-warning system has been shown to reduce in-hospital mortality in a randomized controlled trial.",
+  "disproof": "A paper whose own study randomizes patients or units to a machine-learning sepsis alert versus usual care and reports in-hospital mortality as an outcome.",
+  "query": "sepsis AND (\"machine learning\" OR \"artificial intelligence\" OR algorithm) AND (prediction OR \"early warning\") AND (randomized OR randomised OR trial) AND mortality",
+  "pmids": [
+   "29435343",
+   null,
+   null
+  ],
+  "expected": "gap narrowed",
+  "note": "Shimabukuro 2017 (BMJ Open Respiratory Research) is a small single-centre RCT with a mortality reduction; the gap should narrow to multi-centre or adequately powered evidence rather than close outright."
+ },
+ {
+  "id": "glioma_idh_radiomics",
+  "name": "Radiomics prediction of IDH mutation in glioma",
+  "question": "Have MRI radiomics models for IDH mutation status in glioma been validated on external multi-centre data?",
+  "gap": "No MRI radiomics model for IDH mutation status in glioma has been validated on an external cohort from a different institution.",
+  "disproof": "A paper whose own study trains a radiomics or deep learning IDH model on one institution's MRI and tests it on a cohort from another institution.",
+  "query": "glioma AND (radiomics OR \"deep learning\") AND IDH AND MRI AND (external OR \"multi-center\" OR multicenter OR validation)",
+  "pmids": [
+   null,
+   null,
+   null
+  ],
+  "expected": "gap closed",
+  "note": "External validation of IDH models is common; the corpus should contain several counterexamples. No anchor given: the run picks the top hit."
+ },
+ {
+  "id": "cade_interval_cancer",
+  "name": "Computer-aided polyp detection and interval cancer",
+  "question": "Has computer-aided polyp detection at colonoscopy been shown to reduce interval colorectal cancer?",
+  "gap": "No randomized trial has shown that computer-aided detection at colonoscopy reduces post-colonoscopy (interval) colorectal cancer, as opposed to adenoma detection rate.",
+  "disproof": "A paper whose own study randomizes colonoscopies to CADe versus standard and reports interval colorectal cancer incidence as an outcome.",
+  "query": "colonoscopy AND (\"computer-aided detection\" OR CADe OR \"artificial intelligence\") AND (polyp OR adenoma) AND (randomized OR randomised) AND (\"interval cancer\" OR \"post-colonoscopy\" OR incidence)",
+  "pmids": [
+   null,
+   null,
+   null
+  ],
+  "expected": "gap stands",
+  "note": "RCTs show higher adenoma detection; interval cancer outcomes are not yet reported in trials. Tests whether the grader confuses surrogate outcomes with the stated outcome."
+ },
+ {
+  "id": "federated_imaging_prospective",
+  "name": "Federated learning for medical imaging in clinical workflow",
+  "question": "Has a federated-learning medical imaging model been deployed and evaluated prospectively in clinical workflow?",
+  "gap": "No model trained by federated learning across hospitals has been deployed and evaluated prospectively in a live clinical workflow.",
+  "disproof": "A paper whose own study trains a model by federated learning across sites and then evaluates it prospectively on patients in routine care.",
+  "query": "\"federated learning\" AND (imaging OR radiology OR CT OR MRI) AND (deployment OR prospective OR \"clinical workflow\" OR \"real-world\")",
+  "pmids": [
+   null,
+   null,
+   null
+  ],
+  "expected": "gap stands",
+  "note": "Federated studies are mostly retrospective multi-site benchmarks (EXAM, FeTS). Tests whether multi-site training is mistaken for prospective deployment."
+ },
+ {
+  "id": "knee_mri_pain",
+  "name": "AI for knee pain from MRI",
+  "question": "Can AI detect or predict pain symptoms from knee MRI images?",
+  "gap": "No AI model has predicted a patient's reported knee pain, rather than structural damage, from MRI alone.",
+  "disproof": "A paper whose own study trains or tests a model on knee MRI with patient-reported pain as the target and reports its accuracy.",
+  "query": "(knee) AND (MRI OR \"magnetic resonance imaging\") AND (\"deep learning\" OR \"artificial intelligence\" OR \"machine learning\" OR radiomics) AND (pain OR symptom*)",
+  "pmids": [
+   "32055951",
+   "40885690",
+   "33337584"
+  ],
+  "expected": "gap closed",
+  "note": "The shipped knee set. Chang 2020 (the anchor) trains a Siamese network on OAI MRI with pain as the target, so the anchor itself closes the gap as written."
+ }
+]

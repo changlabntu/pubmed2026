@@ -1,20 +1,20 @@
-# Module 1 v3: build your own literature review
+# Module 1 v4: argue a research gap
 
-A Streamlit app that walks through a small literature review over PubMed
-abstracts. Embeddings from OpenAI `text-embedding-3-small`; grading, writing
-and fact-checking by Claude Haiku 5.5 (Sonnet 5.5 optional). This version
-exposes the knobs: the pool, the question, the anchor paper, every system
-prompt, the search strategy and the model. The homework is the report the
-app writes for you.
+This Streamlit app builds a mini literature review the way a paper's
+introduction argues. The student states a claim about a gap, starts from
+three papers, gathers evidence for and against, and has the model write the
+argument as thesis, antithesis and synthesis with a verdict. Every cited
+sentence is then checked against the abstract it cites. Embeddings come from
+OpenAI `text-embedding-3-small`. Scoring, writing and fact-checking are done
+by Claude Haiku 5.5, with Sonnet 5.5 available as an option. The homework is
+the report the app writes.
 
-Two pools ship with it:
-
-| Pool | Default question | Abstracts | Anchor |
-|---|---|---|---|
-| `lung_ct` | Who has validated an AI system for lung cancer screening in a real screening cohort? | 181 | Ledda 2026, PMID 41308576 |
-| `knee_mri` | Can AI detect or predict pain symptoms from knee MRI images? | 119 | Chang 2020, PMID 32055951 |
-
-Or type your own PubMed query in Q1.
+Three question sets ship with the app, in `question_sets/`. They cover AI
+for lung cancer screening on low-dose CT, AI for knee pain from MRI, and AI
+prediction of total knee replacement. Each set carries the topic question,
+the gap, what would refute it, a PubMed query and three PMIDs. Two pools of
+abstracts are cached under `pools/`, named `lung_ct` and `knee_mri`. Any
+question set can also fetch its own corpus from PubMed.
 
 ## Setup
 
@@ -26,80 +26,145 @@ cp .env.example .env               # paste ANTHROPIC_API_KEY and OPENAI_API_KEY
 streamlit run app.py
 ```
 
-On Streamlit Community Cloud the main file is `app/app.py`; put the same two
+On Streamlit Community Cloud the main file is `app/app.py`. Put the same two
 keys in the app's Secrets panel instead of `.env`.
 
-## The five steps
+## The four moves
 
-| Step | What the student controls | What happens | Report |
-|---|---|---|---|
-| Q1 Build corpus | own PubMed query + max records (default; the most relevant records are kept, not the newest), or a shipped pool; reviews and editorials always excluded; three PMIDs for the anchor and two companions, added to the pool and drawn red on the map | fetch abstracts, embed title + abstract, cache under `pools/`; t-SNE map of the pool, one dot per paper sized by iCite citation count (capped at 100), hover for the title | document count |
-| Q2 Grade | research question, **grading prompt** (full text) | the model grades the anchor + two companions named in Q1 (or a chosen anchor + two seed-42 companions if none were given); the table shows whatever keys the prompt asks for | highest-graded PMID and why |
-| Q3 Find similar | k, embed title+abstract or title only | cosine from the anchor; two nearest replace the companions and are graded | did the neighbours grade higher |
-| Q4 Search | embedding / keyword (BM25) / hybrid (rank fusion), rewrite toggle, k | the question retrieves; every hit is graded | HIGH count, anchor rank |
-| Q5 Summarize and verify | grades to include, full-abstract toggle, **synthesis prompt**, **verifier prompt** | the model writes a cited review; each cited sentence is checked against its abstract | claims checked, claims supported |
+**1. The claim.** The student writes the topic question, the gap, and the
+kind of paper that would refute the gap. These three lines go into every
+model call as context.
 
-Under every step there is a comment box. The sidebar has the model switch
-(Haiku; Sonnet shown greyed out, enable with `ALLOW_SONNET` in `app.py`), a cost cap slider that stops
-the buttons when the session has spent that much, the running total, and
-**Download report (.md)**: every setting, prompt, table, the review, the
-verification rows, the comments and the cost in one file.
+**2. Start from three papers.** The student picks a corpus, either a shipped
+pool or their own PubMed query, and names an anchor paper and two companion
+papers by PMID. The scoring prompt sits here in three editable boxes. One
+button fetches the corpus, scores the three papers, and draws them with a
+black outline on the map. The point is to see where the three papers fall
+before any search.
+
+**3. Gather evidence.** One button runs two searches, the six papers closest
+to the question and the six closest to the anchor. The new papers are scored
+in one call and join the three. Green panels argue for the gap and red panels
+argue against it. The map recolours by stance. The student should notice
+which search found the paper they would have chosen, and whether any red
+panel deserves to be red.
+
+**4. The argument.** The argument prompt and the verifier prompt sit here,
+each as three editable boxes with a red edge. One button has the model write the thesis, the antithesis, the
+synthesis and a verdict from the thesis and antithesis papers. Antithesis
+papers go in with their full abstract. Every cited sentence is then checked
+against the abstract it cites. The student should say whether the synthesis
+narrowed or conceded the gap, and name one verification row they dispute.
+
+A comment box sits under moves 2, 3 and 4. The sidebar holds the question-set
+loader and the download button for the report.
+
+## Teacher mode
+
+The app has two modes. Students see Haiku only and a cost cap of 10 cents
+that is enforced but not shown. Teachers also see the model switch with
+Sonnet 5.5, the cost cap slider, and the spend for the session. Start
+teacher mode with
+
+```bash
+streamlit run app.py -- --teacher
+```
+
+or set `TEACHER=1` in the environment. On Community Cloud put `TEACHER = "1"`
+in the Secrets panel.
+
+All three prompts are editable in both modes, each as three boxes headed
+BACKGROUND, WHAT TO DO and OUTPUT FORMAT. The boxes are joined in order into
+the prompt the model receives, and a Reset button restores the defaults. The
+scoring prompt is the same full text in both modes, because it is the demo.
+The argument and verifier prompts differ: teachers get the full text, and
+students start from one line per box, with a red edge on those boxes to
+mark them as the ones the homework asks them to change. A student who adds
+a rule to WHAT TO DO sees the model's argument change on the next run.
+
+## One vocabulary
+
+For each paper the model returns two things. The first is whether the
+paper's own work touches the question at all. The second is a score from 1
+to 10, where 1 is the strongest evidence against the gap and 10 is the
+strongest evidence for it. The bands of the scale are spelled out in the
+prompt. The stance is then computed in code. A paper that does not touch the
+question is neutral. A paper scored 5 or below is antithesis. A paper scored
+above 5 is thesis. The cutoff is `STANCE_CUTOFF` in `lit_helper.py`.
+
+The model also tests each refutation condition against the abstract and marks
+it yes, no or not reported, with a quote. The gap relation is computed from
+those checks, as counterexample, partial, no or unclear. A flag marks any
+paper whose score and checks disagree, so that the reader trusts the quotes
+over the number.
+
+The verifier marks each claim as supported, not supported, or can't tell. The
+verdict on the gap is one of gap stands, gap narrowed, gap closed, or can't
+tell. In every place, "can't tell" means that the material does not decide
+the question.
+
+## The report
+
+The report is written in the order a student would write the argument. It
+begins with the claim and the three starting papers. It then lists the
+evidence for, against and neutral, each with its score, reason and quote,
+and describes how the corpus was searched. The argument follows with its
+verdict, then the verification counts and table. An appendix holds the
+prompts as used, every scored record, the model and the cost. The student's
+comments sit under the moves they belong to.
 
 ## What happens when a prompt breaks
 
-If the grading prompt no longer produces a JSON array, the app shows the raw
-reply with a yellow note instead of a table. Q5 waits for a Q4 run that did
-return JSON. If the records carry no `grade` key, Q5 uses every Q4 paper and
-says so. Editing a prompt, the question, or a search setting clears that step
-and the steps after it; comments survive.
+If the scoring prompt no longer produces a JSON array, the app shows the raw
+reply with a yellow note. The note says when the reply was cut off at the
+model's output limit. If the records carry neither a score nor a relevance
+field, the argument uses every paper and says so. Editing the claim, the
+PMIDs or a prompt clears that move and the moves after it. Comments survive.
 
-## Adding a shipped pool
+## Adding a pool or a question set
 
 ```bash
-python build_pool.py my_pool '<PubMed query>'          # fetch, filter, embed
-python pick_anchor.py my_pool '<the review question>'  # grades the top 10, suggests an anchor
+python build_pool.py my_pool '<PubMed query>'
+python pick_anchor.py my_pool '<question>' '<gap>' '<disproof>'
 ```
 
-Then write `pools/my_pool/papers.json` with the question, anchor and
-companions. Student-built pools are cached under `pools/custom/` and ignored
-by git.
+The first command fetches, filters and embeds a pool. The second scores the
+ten papers closest to the question and suggests an anchor.
+
+A question set is one JSON file in `question_sets/`. It has the fields
+`name`, `question`, `gap`, `disproof`, `query` and `pmids`, with the anchor
+first, and optionally `prompts`. Copy one of the shipped files and edit it.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `app.py` | the Streamlit app |
-| `lit_helper.py` | corpus, search (embedding / BM25 / hybrid), grading, synthesis, verification |
-| `pubmed_ingest.py` | PubMed E-utilities fetch and parse; citation counts come from NIH iCite in `lit_helper.fetch_citations` |
-| `build_pool.py`, `pick_anchor.py` | instructor tools |
-| `pools/<name>/` | query, PMIDs, meta.json (match count, fetch date), abstracts, vectors, papers.json (question, gap, anchor) |
-| `homework/homework.md` | what to submit |
-| `UI-MOCKUP.md` | the page layout as a text sketch |
+| `app.py` | The Streamlit page. |
+| `lit_helper.py` | The corpus, the two retrievals, scoring and stance, the argument, verification, and the stance panels. |
+| `pubmed_ingest.py` | Fetching and parsing from PubMed, and citation counts from NIH iCite. |
+| `build_pool.py`, `pick_anchor.py` | Instructor tools. |
+| `pools/<name>/` | A cached pool: the query, the PMIDs, the fetch metadata, the abstracts, the vectors, and the anchor. |
+| `question_sets/` | The shipped question sets. |
+| `homework/homework.md` | What students submit. |
+| `UI-MOCKUP.md` | The page layout as a text sketch. |
+| `../tests/test_v4.py` | Headless tests with a faked model. |
+| `../tests/live_run.py` | One run of the four moves against the real models, printed. |
+| `../tests/scenarios.py` | Ten scenarios against the real models, with quality checks. |
 
 ## Cost
 
-A default run is about 1.5 cents on Haiku, about 30 model calls, most of them
-Q5's one-call-per-sentence verification, plus one Q6 call. Switching on the
-full screen in Q4 grades every paper ten per call: on the 181-paper lung_ct
-pool that measured 19 calls and 3.9 cents (the in-app estimate said 3.3),
-and the whole run came to 5.6 cents because Q5 and Q6 then read 87 graded
-papers. The default cap is 10 cents.
-
-## The gap loop
-
-Q0 asks for the research question, the proposed gap (what nobody has done)
-and what evidence would disprove it. All three go into every grading and
-synthesis call as context, never into the editable prompts. Q1 reports the
-retrieval funnel (PubMed matches, fetched, with abstract, fetch date) so
-"not retrieved" is never mistaken for "no study exists". Q6 ends the run
-with a verdict on the gap: contradicted, partly addressed, provisionally
-supported, or insufficient evidence, with the closest counterexamples.
+A full run on the lung CT set makes about 12 model calls and costs about 1.2
+cents on Haiku. There are two scoring calls, one for the three starting
+papers and one for up to 12 new papers, one argument call, and one
+verification call for each cited sentence. The default cap is 10 cents.
 
 ## Two things to know
 
-- Haiku 5.5 emits a thinking block before its text even at low effort. Every
-  call uses `max_tokens` of 2048 or more, or the answer comes back empty.
-- The verifier checks one sentence against one abstract. Sentences that
-  summarize several papers often come back `partial`, because no single
-  abstract can confirm a generalization. That is a limitation of the method,
-  not necessarily an error in the review.
+Haiku 5.5 emits a thinking block before its text even at low effort, and the
+thinking counts against `max_tokens`. Scoring 17 papers with quotes and
+condition checks produces around 8,000 output tokens, so the scoring call
+allows 16,384.
+
+The verifier checks one sentence against one abstract. A sentence that
+summarises several papers can only be judged for this paper's share. Read
+the issue column before trusting a "not supported".

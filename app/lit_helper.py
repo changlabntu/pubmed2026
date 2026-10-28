@@ -1,19 +1,14 @@
 """
-Helpers for the Module 1 literature-review app (v3).
+Helpers for the Module 1 app: argue a research gap (v4).
 
 Pipeline pieces, in the order the app uses them:
   build_corpus        load a shipped pool (abstracts + vectors, cached on disk)
   build_custom_pool   same for a student's own PubMed query
   nearest             papers most similar to one paper (vector to vectors)
   search              papers most similar to a question (embedding)
-  keyword_search      papers most similar to a question (BM25 over words)
-  hybrid_search       the two rankings fused
-  rewrite_query       the model turns the question into a search string
-  grade_relevance     the model grades each paper; the prompt owns the format
-  grade_all           the same grader over every paper in the pool, in batches
-  synthesize          the model writes a short review from the graded papers
+  grade_relevance     the model scores each paper 1-10 against the gap; code derives thesis/antithesis/neutral
+  argue               the model writes the dialectic (thesis, antithesis, synthesis) and the verdict
   verify_claims       the model checks every cited sentence against its abstract
-  assess_gap          the model judges whether the proposed gap is still open
 
 Every model call takes the system prompt and model as arguments, because the
 app lets students edit both, and returns a Usage so the app can show cost.
@@ -21,12 +16,11 @@ app lets students edit both, and returns a Usage so the app can show cost.
 
 import datetime as dt
 import hashlib
+import html
 import json
-import math
 import os
 import random
 import re
-from collections import Counter
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -76,6 +70,7 @@ class Usage:
     input_tokens: int = 0
     output_tokens: int = 0
     calls: int = 0
+    truncated: bool = False   # the model hit max_tokens, so the text is cut off
 
     @property
     def cost_usd(self):
@@ -114,10 +109,14 @@ def openai_client():
 
 # ---------------------------------------------------------------- Q1 corpus
 
+EMBED_MAX_CHARS = 24000   # the model takes 8192 tokens; a few PubMed abstracts run past that
+
+
 def embed_texts(texts, client=None, batch_size=100):
     """Embed a list of strings. Returns (unit-normalised array, Usage)."""
     client = client or openai_client()
     vectors, usage = [], Usage(EMBED_MODEL)
+    texts = [t[:EMBED_MAX_CHARS] for t in texts]
     for i in range(0, len(texts), batch_size):
         r = client.embeddings.create(model=EMBED_MODEL, input=texts[i:i + batch_size])
         vectors.extend(e.embedding for e in r.data)
@@ -347,7 +346,7 @@ def build_custom_pool(query, retmax=200, exclude=True, progress=None, force=Fals
     return documents, vectors, usage, "network", pool_id
 
 
-# ---------------------------------------------------------------- Q3 / Q4 similarity
+# ---------------------------------------------------------------- Q3 retrieval
 
 def nearest(anchor_pmid, documents, vectors, k=10):
     """Top-k papers by cosine similarity to one paper, excluding itself."""
@@ -373,62 +372,6 @@ def rank_of(pmid, hits):
     return None
 
 
-_TOKEN_RE = re.compile(r"[a-z0-9]+")
-
-
-def _tokens(text):
-    return _TOKEN_RE.findall(text.lower())
-
-
-def keyword_search(question, documents, k=10, k1=1.5, b=0.75):
-    """BM25 over title + abstract: the classic word-overlap ranking. No
-    embeddings, no model call. A word that appears in few papers counts
-    more; long papers are penalised. Returns [(doc, score)]."""
-    toks = [_tokens(d["title"] + " " + d["abstract"]) for d in documents]
-    n = len(documents)
-    avgdl = sum(len(t) for t in toks) / max(1, n)
-    df = Counter()
-    for t in toks:
-        df.update(set(t))
-    q = _tokens(question)
-    scores = []
-    for t in toks:
-        tf, dl, s = Counter(t), len(t), 0.0
-        for w in q:
-            if w not in tf:
-                continue
-            idf = math.log(1 + (n - df[w] + 0.5) / (df[w] + 0.5))
-            s += idf * tf[w] * (k1 + 1) / (tf[w] + k1 * (1 - b + b * dl / avgdl))
-        scores.append(s)
-    order = sorted(range(n), key=lambda i: -scores[i])[:k]
-    return [(documents[i], scores[i]) for i in order]
-
-
-def hybrid_search(question, documents, vectors, k=10, client=None, depth=50, c=60):
-    """Reciprocal rank fusion of the embedding and keyword rankings. A paper
-    scores sum(1 / (c + rank)) over the lists it appears in. Returns (hits, Usage)."""
-    emb, usage = search(question, documents, vectors, k=depth, client=client)
-    kw = keyword_search(question, documents, k=depth)
-    fused = {}
-    for hits in (emb, kw):
-        for r, (d, _) in enumerate(hits, 1):
-            fused[d["pmid"]] = fused.get(d["pmid"], 0.0) + 1.0 / (c + r)
-    by = {d["pmid"]: d for d in documents}
-    top = sorted(fused.items(), key=lambda kv: -kv[1])[:k]
-    return [(by[p], s) for p, s in top], usage
-
-
-REWRITE_INSTRUCTIONS = """Rewrite the research question as a search string for a literature
-database: the key concepts, each with one or two synonyms, under 30 words,
-no boolean operators, no quotes. Return only the search string."""
-
-
-def rewrite_query(question, client=None, model=CHAT_MODEL, system=REWRITE_INSTRUCTIONS):
-    client = client or anthropic_client()
-    text, usage = _chat(client, system, question, max_tokens=2048, model=model)
-    return text.strip().strip('"'), usage
-
-
 # ---------------------------------------------------------------- prompts
 
 def question_block(question, gap=None):
@@ -451,55 +394,129 @@ def context_block(docs):
     )
 
 
-GRADE_INSTRUCTIONS = """You are screening papers for a literature review.
+# The grading prompt is three sections so the app can show each in its own
+# box; the heading of each is the box label. GRADE_INSTRUCTIONS is the sections
+# joined, which is what gets sent, after {research_question} and {proposed_gap}
+# are filled in (see fill_prompt).
+GRADE_SECTIONS = [
+    ("background", "BACKGROUND", """You are screening scientific papers for a literature review that argues for or against a proposed research gap. A reviewer will read the papers you keep and verify what you extract, so state nothing the abstract does not support. When unsure whether a paper bears on the question, say it does; when unsure between two scores, give the lower one. A reviewer reads every low-scoring paper in full and can discard it, but never sees one you screened out.
 
-For EACH paper in the context, judge how well it answers the question.
-  HIGH   = directly answers it: the paper's own study addresses the question
-           and reports results.
-  MEDIUM = partly relevant: related task or population, unclear design, or no results.
-  LOW    = not relevant.
-An abstract that does not mention something is "not reported", not "not done":
-use null, never infer.
+Research_question:
+{research_question}
 
-Return ONLY a JSON array, one object per paper, in the order given, with keys:
-  pmid            string
-  grade           "HIGH" | "MEDIUM" | "LOW"
-  gap_relation    "addresses" | "partly" | "no" | "unclear": does this paper's own
-                  study do what the PROPOSED GAP says nobody has done? (null if no gap given)
-  cohort          the cohort or data source named in the abstract, or null
-  n               number of participants or scans in the evaluation, as written, or null
-  headline_result the key quantitative result with numbers exactly as written, or null
-  evidence_quote  one verbatim sentence from the abstract that justifies the grade
-  why             one sentence
-No prose before or after the JSON."""
+Proposed research gap:
+{proposed_gap}"""),
 
+    ("todo", "WHAT TO DO", """For each paper in the provided context:
 
-SYNTHESIS_INSTRUCTIONS = """You are writing a short literature review for a clinician audience.
-Use only the material in the context. Cite every claim as [PMID n]; if a sentence
-rests on several papers, cite each: [PMID n; PMID m].
+1. Read only its title and abstract, and count only the paper's own work, not studies it cites. If title and abstract disagree, follow the abstract. Treat anything unstated as unknown, never as absent.
+2. Decide whether the paper's own work bears on the research question (bears: yes or no). If no, set score and gap_checks to null.
+3. Check the gap for every paper that bears on the question. Split the gap into conditions, worded the same way for every paper so results can be compared, and mark each yes, no, or not reported. Use no only when the abstract shows the work differs.
+4. Score the paper from 1 to 10 for what it says about the proposed gap. Low scores undermine the gap as worth doing; high scores support it.
+   1-2  the paper's own study does what the gap says nobody has done (every condition met), or shows the gap's premise is wrong
+   3-4  it does the deciding work and only a secondary condition is not reported, or it shows that filling the gap would matter little (the problem is solved another way, is minor, or the approach is known not to work)
+   5-6  mixed: some evidence each way, or the paper's work sits beside the gap without settling it
+   7-8  it bears on the question but a condition is shown unmet (met: no), however much of the rest it does
+   9-10 its abstract names the missing work as not yet done, or shows the problem matters and is unsolved
+   A condition marked no keeps the score at 5 or above unless the paper undermines the premise or the worth of the gap; say which in why. A paper on a different disease, task or outcome is neutral, not a low score."""),
 
-Structure, under 350 words:
-1) Who validated what: one bullet per HIGH paper with cohort, size, AI task, headline result.
-2) What recurs across the studies: cohorts, AI tasks, comparison design.
-3) Gaps: what none of these abstracts did. Write "none of these abstracts",
-   never "no study": absence from the context is not absence from the literature.
-Be concrete with numbers. No preamble."""
+    ("output", "OUTPUT FORMAT", """Return only a valid JSON array, one object per paper in the original order, starting with [ and ending with ]. Each object has these fields:
+
+    pmid            string
+    bears           "yes" | "no"
+    score           integer 1-10, or null when bears is "no"
+    evidence_quote  one verbatim sentence from the abstract that justifies the score (when bears is "no", one showing what the paper actually studies), or null if none fits
+    why             always one sentence: what decided the score (the condition met or unmet, the premise undermined, why the gap would matter little), or for neutral why the paper is off the question
+    gap_checks      [{"condition": string, "met": "yes" | "no" | "not reported", "quote": string | null}] | null
+                    quote is one verbatim sentence supporting met; null when met is "not reported\""""),
+]
 
 
-VERIFY_INSTRUCTIONS = """You are a strict fact-checker. You get one claim and ONE of the abstracts it cites.
-Judge ONLY from the abstract. Every number and named cohort that the claim attributes
-to this paper must appear in, or be directly derivable from, the abstract.
+def join_sections(items):
+    """(heading, text) pairs to one system prompt: each heading on its own
+    line above its text, blank-line separated, sections with no text dropped."""
+    return "\n\n".join(f"{title}\n\n{text.strip()}" for title, text in items if text and text.strip())
 
-A claim may summarize several papers ("most studies ...", "cohorts ranged from ..."). Then
-judge only the part that concerns this paper: supported if the abstract is consistent with
-its share of the claim, partial if some detail is missing or loosely stated, insufficient
-if the abstract says nothing about this paper's share of the claim, unsupported only if
-the abstract contradicts the claim. "Not reported in this abstract" is not "not studied".
 
-Return ONLY a JSON object:
-{"verdict": "supported" | "partial" | "insufficient" | "unsupported",
- "quote": "verbatim abstract text that supports or contradicts the claim",
- "issue": "what the abstract does not state, or null"}"""
+GRADE_INSTRUCTIONS = join_sections((title, text) for _, title, text in GRADE_SECTIONS)
+PLACEHOLDERS = ("{research_question}", "{proposed_gap}")
+
+
+def fill_prompt(system, question, gap=None):
+    """Put the question and gap into the system prompt's placeholders. Returns
+    (filled_system, had_placeholders): when the student removed the
+    placeholders, the caller puts the question block in the user message."""
+    had = any(p in system for p in PLACEHOLDERS)
+    g = (gap or {}).get("gap", "").strip() if gap else ""
+    d = (gap or {}).get("disproof", "").strip() if gap else ""
+    proposed = g or "(none given)"
+    if g and d:
+        proposed += f"\nEvidence that would disprove it: {d}"
+    return system.replace("{research_question}", question).replace("{proposed_gap}", proposed), had
+
+
+VERDICTS = ("gap stands", "gap narrowed", "gap closed", "can't tell")
+
+ARGUE_SECTIONS = [
+    ("background", "BACKGROUND", """You are writing the argument for a proposed research gap as a dialectic, for a clinician audience. A reviewer will check every cited sentence against the abstract it cites, so use only the material in the context, and cite every claim as [PMID n], or [PMID n; PMID m] when a sentence rests on several papers.
+
+Research question:
+{research_question}
+
+Proposed research gap:
+{proposed_gap}"""),
+
+    ("todo", "WHAT TO DO", """Write three parts, under 400 words in all, then give a verdict.
+
+1. Thesis: the gap as proposed, and the papers whose own limits point at it. For each one, one sentence on what its study did and which condition it stopped short of, or where its abstract names the missing work.
+2. Antithesis: the strongest case against the gap. For each antithesis paper, what its own study did that meets the conditions, with cohort, size and headline result, stated at its strongest before it is weighed. If there is none, say so and name the thesis papers that come closest.
+3. Synthesis: what survives. Restate the gap as the narrowest claim the antithesis leaves standing, or concede that the gap as proposed is closed. Name the condition the disagreement turns on, and what the search funnel means for how far the verdict can be trusted.
+4. Verdict, one of:
+   "gap stands"    nothing in the context does what the gap says nobody has done
+   "gap narrowed"  something does part of it; the gap survives only in the narrower form you stated
+   "gap closed"    a paper's own study does it, or shows the premise wrong, and nothing worth stating survives
+   "can't tell"    the abstracts do not settle the deciding condition
+   The verdict must match the synthesis: a narrower surviving claim means "gap narrowed", not "gap closed".
+5. Rules. "Not reported in this abstract" is not "not studied". "Not retrieved" is not "no study exists": write "none of these abstracts", never "no study". Each record carries SCORE (1 = strongest against the gap, 10 = strongest for) and STANCE derived from it; a low score with weak quotes is a weak antithesis, say so. Where a record carries FLAG, the score and the grader's own checks disagree: trust the quotes over the number, and the abstract over both."""),
+
+    ("output", "OUTPUT FORMAT", """Return ONLY a JSON object with keys "thesis", "antithesis", "synthesis" (each a string of prose with the citations) and "verdict" (one of the four strings)."""),
+]
+
+# What a student starts from: one line per box. The model gets exactly what
+# is in the boxes, so adding a rule here is the exercise.
+ARGUE_SECTIONS_STUDENT = [
+    ("background", "BACKGROUND", "You are writing the argument for a proposed research gap as thesis, antithesis and synthesis, for clinicians, using only the papers in the context and citing every claim as [PMID n]."),
+    ("todo", "WHAT TO DO", "Write the thesis (the papers that show the gap is real), the antithesis (the strongest papers against it), the synthesis (what survives), and a verdict: gap stands, gap narrowed, gap closed, or can't tell."),
+    ("output", "OUTPUT FORMAT", "Return ONLY a JSON object with keys thesis, antithesis, synthesis and verdict."),
+]
+ARGUE_INSTRUCTIONS = join_sections((title, text) for _, title, text in ARGUE_SECTIONS)
+
+VERIFY_SECTIONS = [
+    ("background", "BACKGROUND", """You are a strict fact-checker. You get one claim and ONE of the abstracts it cites, and you judge only from that abstract. Every number and named cohort that the claim attributes to this paper must appear in, or follow directly from, the abstract."""),
+
+    ("todo", "WHAT TO DO", """1. Find this paper's share of the claim. A sentence that summarizes or counts several papers ("most studies ...", "five records each report ...") is judged only for its part about this paper; that the other papers are absent from this abstract is not a contradiction.
+2. Check every number and cohort in that share against the abstract.
+3. Choose the verdict:
+   "supported"      the abstract is consistent with this paper's share of the claim, even if loosely stated; put any looseness in "issue"
+   "not supported"  the abstract contradicts the claim, or the claim attributes to this paper a number or cohort the abstract gives differently
+   "can't tell"     the abstract says nothing about this paper's share of the claim. "Not reported in this abstract" is not "not studied".
+4. Quote the abstract sentence that decides it."""),
+
+    ("output", "OUTPUT FORMAT", """Return ONLY a JSON object:
+{"verdict": "supported" | "not supported" | "can't tell",
+ "quote": "the abstract sentence that decides it, verbatim, or empty",
+ "issue": "what is loose, missing or contradicted, one short sentence, or empty"}"""),
+]
+
+VERIFY_SECTIONS_STUDENT = [
+    ("background", "BACKGROUND", "You are a fact-checker who gets one claim and one abstract it cites, and judges from that abstract alone."),
+    ("todo", "WHAT TO DO", "Decide whether the abstract supports the claim, contradicts it, or says nothing about it, and quote the sentence that decides it."),
+    ("output", "OUTPUT FORMAT", "Return ONLY a JSON object with keys verdict (supported, not supported, or can't tell), quote and issue."),
+]
+VERIFY_INSTRUCTIONS = join_sections((title, text) for _, title, text in VERIFY_SECTIONS)
+
+CLAIM_VERDICTS = ("supported", "not supported", "can't tell")
+
 
 
 def _chat(client, system, user, max_tokens=4096, model=CHAT_MODEL):
@@ -513,7 +530,8 @@ def _chat(client, system, user, max_tokens=4096, model=CHAT_MODEL):
         output_config={"effort": "low"},
     )
     text = "".join(b.text for b in r.content if b.type == "text").strip()
-    return text, Usage(model, r.usage.input_tokens, r.usage.output_tokens, calls=1)
+    return text, Usage(model, r.usage.input_tokens, r.usage.output_tokens, calls=1,
+                       truncated=r.stop_reason == "max_tokens")
 
 
 def _parse_json(text):
@@ -522,28 +540,35 @@ def _parse_json(text):
     return json.loads(text)
 
 
-# ---------------------------------------------------------------- Q2 / Q3 / Q4 grading
+# ---------------------------------------------------------------- Q2 / Q3 grading
 
 def _add(total, usage):
     total.input_tokens += usage.input_tokens
     total.output_tokens += usage.output_tokens
     total.calls += usage.calls
+    total.truncated = total.truncated or usage.truncated
+
+
+GRADE_MAX_TOKENS = 16384
 
 
 def _grade_call(question, docs, client, system, model, gap=None, by_position=True):
     """One grading call over `docs`. Returns (records_or_None, Usage, raw).
     Records match the model's objects to documents by pmid; with by_position
     a record whose pmid is unknown falls back to its position in the list."""
-    user = f"{question_block(question, gap)}\n\nCONTEXT:\n{context_block(docs)}"
-    text, usage = _chat(client, system, user, model=model)
+    system, filled = fill_prompt(system, question, gap)
+    user = ("" if filled else f"{question_block(question, gap)}\n\n") + f"CONTEXT:\n{context_block(docs)}"
+    # 20 records with quotes and gap checks run well past 4096 output tokens,
+    # and the thinking block counts against the same budget
+    text, usage = _chat(client, system, user, max_tokens=GRADE_MAX_TOKENS, model=model)
     items = None
     for attempt in range(2):
         try:
             items = _parse_json(text)
             break
         except json.JSONDecodeError:
-            if attempt == 0:
-                text, u2 = _chat(client, system, user, model=model)   # one retry
+            if attempt == 0 and not usage.truncated:   # a cut-off reply would only be cut off again
+                text, u2 = _chat(client, system, user, max_tokens=GRADE_MAX_TOKENS, model=model)
                 _add(usage, u2)
     if not isinstance(items, list) or not all(isinstance(x, dict) for x in items):
         return None, usage, text
@@ -559,8 +584,75 @@ def _grade_call(question, docs, client, system, model, gap=None, by_position=Tru
         item["doc"] = d
         if "evidence_quote" in item:
             item["quote_found"] = quote_in_abstract(item.get("evidence_quote"), d["abstract"])
+        if isinstance(item.get("gap_checks"), list):
+            item["gap_relation"], item["gap_why"] = gap_relation(item["gap_checks"])
+        stance = derive_stance(item)
+        if stance:
+            item = {"pmid": item["pmid"], "stance": stance, **item}
+        item["flag"] = stance_flag(item)
         records.append(item)
     return records, usage, text
+
+
+def gap_relation(checks):
+    """Summarise the grader's per-condition checks as one label, by a fixed
+    rule rather than by asking the model: every condition met = counterexample
+    (the paper does what the gap says nobody has done); any condition shown
+    unmet = no; some met and none unmet = partial; nothing decidable = unclear.
+    Returns (label, one sentence naming the deciding conditions)."""
+    checks = [c for c in checks if isinstance(c, dict)]
+    met = {m: [c.get("condition", "?") for c in checks if str(c.get("met", "")).strip().lower() == m]
+           for m in ("yes", "no", "not reported")}
+    if not checks:
+        return "unclear", "no conditions were checked"
+    if met["no"]:
+        return "no", "not met: " + "; ".join(met["no"])
+    if len(met["yes"]) == len(checks):
+        return "counterexample", "every condition met"
+    if met["yes"]:
+        return "partial", "not reported: " + "; ".join(met["not reported"])
+    return "unclear", "nothing reported for any condition"
+
+
+STANCE_CUTOFF = 5   # score 1..5 = antithesis, 6..10 = thesis; bears "no" = neutral
+
+
+def score_of(record):
+    try:
+        return int(record.get("score"))
+    except (TypeError, ValueError):
+        return None
+
+
+def derive_stance(record):
+    """The stance is computed from the model's two numbers, never asked of it:
+    neutral when the paper does not bear on the question, else antithesis at
+    or below STANCE_CUTOFF and thesis above. None when the prompt returned
+    neither field (the student dropped them)."""
+    bears = str(record.get("bears", "")).strip().lower()
+    if bears == "no":
+        return "neutral"
+    score = score_of(record)
+    if score is None:
+        return None
+    return "antithesis" if score <= STANCE_CUTOFF else "thesis"
+
+
+def stance_flag(record):
+    """Where the score and the model's own condition checks clearly disagree,
+    say so, so the synthesis and the reader trust the quotes over the number.
+    Every condition met but scored as thesis is a contradiction. A 1 or 2 with
+    a condition shown unmet is allowed (the paper may undermine the gap's
+    premise instead) but is marked so the reader checks the why. None
+    otherwise, or when there are no checks or no score."""
+    score, relation = score_of(record), record.get("gap_relation")
+    if relation is None or score is None:
+        return None
+    if score > STANCE_CUTOFF and relation == "counterexample":
+        return f"score {score}, but every condition is met"
+    if score <= 4 and relation == "no":
+        return f"score {score} with a condition shown unmet: read the why"
+    return None
 
 
 def grade_relevance(question, docs, client=None, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL, gap=None):
@@ -571,60 +663,6 @@ def grade_relevance(question, docs, client=None, system=GRADE_INSTRUCTIONS, mode
     position) and, when an evidence_quote key exists, "quote_found"."""
     client = client or anthropic_client()
     return _grade_call(question, docs, client, system, model, gap=gap, by_position=True)
-
-
-def estimate_grade_all(docs, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL, batch=10,
-                       out_tokens_per_doc=150, safety=1.4):
-    """Rough cost in USD of grading every document in batches. Measured
-    token counts run about 1.4x the chars/4 guess, hence the safety factor."""
-    n_batches = math.ceil(len(docs) / batch)
-    doc_tokens = sum(len(d["title"]) + len(d["abstract"]) + 60 for d in docs) / 4
-    in_tokens = doc_tokens + n_batches * (len(system) / 4 + 100)
-    out_tokens = len(docs) * out_tokens_per_doc
-    p = PRICE[model]
-    return safety * (in_tokens * p["input"] + out_tokens * p["output"]) / 1e6
-
-
-def grade_all(question, docs, client=None, system=GRADE_INSTRUCTIONS, model=CHAT_MODEL,
-              gap=None, batch=10, workers=4, budget_usd=None, progress=None):
-    """Screen every document: the grader runs over batches of `batch`
-    papers, a few batches in parallel. Records are matched by pmid only, so
-    a short or reordered reply cannot mis-assign a grade. Returns
-    (records in corpus order, Usage, failed_pmids). A batch whose reply is
-    not JSON after one retry, or that is skipped because the running cost
-    passed budget_usd, lands in failed_pmids; the rest still come back."""
-    from concurrent.futures import ThreadPoolExecutor
-    from threading import Lock
-
-    client = client or anthropic_client()
-    chunks = [docs[i:i + batch] for i in range(0, len(docs), batch)]
-    results, total, lock, done = [None] * len(chunks), Usage(model), Lock(), 0
-    spent = [0.0]
-
-    def job(i):
-        with lock:
-            over = budget_usd is not None and spent[0] >= budget_usd
-        if over:
-            return i, None, Usage(model)
-        recs, usage, _ = _grade_call(question, chunks[i], client, system, model, gap=gap, by_position=False)
-        with lock:
-            spent[0] += usage.cost_usd
-        return i, recs, usage
-
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        for i, recs, usage in ex.map(job, range(len(chunks))):
-            results[i] = recs
-            _add(total, usage)
-            done += 1
-            if progress:
-                progress(done, len(chunks))
-    by_pmid = {}
-    for recs in results:
-        for r in recs or []:
-            by_pmid[r["pmid"]] = r
-    records = [by_pmid[d["pmid"]] for d in docs if d["pmid"] in by_pmid]
-    failed = [d["pmid"] for d in docs if d["pmid"] not in by_pmid]
-    return records, total, failed
 
 
 def _norm(s):
@@ -646,87 +684,192 @@ def quote_in_abstract(quote, abstract, min_words=6):
     return False
 
 
-# ---------------------------------------------------------------- Q5 synthesis
+# ---------------------------------------------------------------- Q4 synthesis
 
 _SKIP_KEYS = {"doc", "quote_found", "pmid"}
 
 
-def grade_of(record):
-    return str(record.get("grade", "")).upper()
+STANCES = ("thesis", "antithesis", "neutral")
 
 
-def record_block(records, attach_full_high=True):
-    """Context for the synthesis: HIGH papers in full (optional), the others
-    as the grader's own record, whatever keys the prompt produced."""
+def stance_of(record):
+    return str(record.get("stance", "")).strip().lower()
+
+
+def record_block(records, attach_full_antithesis=True):
+    """Context for the synthesis: every paper as the grader's own record,
+    whatever keys the prompt produced, plus the full abstract for antithesis
+    papers, which are the ones the argument turns on."""
     parts = []
     for r in records:
         d = r["doc"]
-        head = f"PMID {d['pmid']} | {d['first_author']} et al., {d['year']} | grade {grade_of(r) or 'n/a'}"
-        if grade_of(r) == "HIGH" and attach_full_high:
-            parts.append(f"{head}\nTITLE: {d['title']}\nABSTRACT: {d['abstract']}")
-        else:
-            fields = "\n".join(f"{k.upper()}: {v}" for k, v in r.items() if k not in _SKIP_KEYS)
-            parts.append(f"{head}\nTITLE: {d['title']}\n{fields}")
+        head = f"PMID {d['pmid']} | {d['first_author']} et al., {d['year']} | stance {stance_of(r) or 'n/a'}"
+        fields = "\n".join(f"{k.upper()}: {json.dumps(v, ensure_ascii=False) if isinstance(v, (list, dict)) else v}"
+                           for k, v in r.items() if k not in _SKIP_KEYS)
+        body = f"{head}\nTITLE: {d['title']}\n{fields}"
+        if stance_of(r) == "antithesis" and attach_full_antithesis:
+            body += f"\nABSTRACT: {d['abstract']}"
+        parts.append(body)
     return "\n\n".join(parts)
 
 
-def select_records(records, include=("HIGH", "MEDIUM")):
-    """Records whose grade is in `include`. If no record carries a grade
+def select_records(records, include=("thesis", "antithesis")):
+    """Records whose stance is in `include`. If no record carries a stance
     (the student's prompt dropped it), every record is kept."""
-    if not any(grade_of(r) for r in records):
+    if not any(stance_of(r) for r in records):
         return list(records), False
-    return [r for r in records if grade_of(r) in include], True
+    return [r for r in records if stance_of(r) in include], True
 
 
-def synthesize(question, records, attach_full_high=True, client=None,
-               system=SYNTHESIS_INSTRUCTIONS, model=CHAT_MODEL, gap=None):
-    """Write the review from the selected records. Returns (text, Usage)."""
-    client = client or anthropic_client()
-    user = f"{question_block(question, gap)}\n\nCONTEXT:\n{record_block(records, attach_full_high)}"
-    return _chat(client, system, user, model=model)
+# ---------------------------------------------------------------- Q3 stance panels
+
+PANEL_CSS = """
+body { margin: 0; font-family: "Source Sans Pro", sans-serif; font-size: 14px; color: #262730; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+h4 { margin: 0 0 6px 0; font-size: 14px; }
+.p { display: block; border-radius: 6px; padding: 6px 10px; margin: 4px 0; cursor: pointer;
+     color: inherit; text-decoration: none; }
+.p:hover { filter: brightness(0.94); outline: 2px solid #262730; }
+.t { background: #e6f4ea; border: 1px solid #8fd19e; }
+.a { background: #fdecea; border: 1px solid #f1a9a0; }
+.n { background: #f0f0f0; border: 1px solid #cccccc; display: inline-block; margin: 2px 6px 2px 0; }
+.none { color: #888; font-style: italic; }
+#detail { margin-top: 10px; min-height: 84px; background: #262730; color: #fff; padding: 8px 12px;
+          border-radius: 6px; font-size: 13px; line-height: 1.4; }
+#detail b { color: #ffd66b; }
+#detail .hint { color: #aab; font-style: italic; }
+"""
+
+PANEL_JS = """
+var detail = document.getElementById('detail');
+var hint = detail.innerHTML;
+document.querySelectorAll('.p').forEach(function (el) {
+  el.addEventListener('mouseenter', function () { detail.innerHTML = el.dataset.detail; });
+});
+document.body.addEventListener('mouseleave', function () { detail.innerHTML = hint; });
+"""
 
 
-# ---------------------------------------------------------------- Q5 verification
+def surname(author):
+    """'Paul R' -> 'Paul', 'van der Berg JM' -> 'van der Berg': drop a trailing
+    initials token (PubMed gives LastName Initials)."""
+    parts = (author or "").split()
+    if len(parts) > 1 and parts[-1].isupper() and len(parts[-1]) <= 3:
+        parts = parts[:-1]
+    return " ".join(parts) or "?"
+
+
+def stance_panels_html(records, anchor=None):
+    """HTML for two columns of small panels, one per paper: thesis (for the
+    gap) on the left in green, antithesis (against) on the right in red,
+    strongest first. The panel shows only author and year; hovering fills a
+    detail box under the columns with the title, score and the grader's why;
+    clicking opens the paper on PubMed. Neutral papers sit between the columns
+    and the detail box in grey. Returns (html, height_px)."""
+    def panel(r, cls, right=False):
+        d = r["doc"]
+        label = f"{surname(d['first_author'])} et al. {d['year']}" + (" (anchor)" if d["pmid"] == anchor else "")
+        score = r.get("score")
+        tip = (f"<b>{html.escape(d['title'])}</b><br>"
+               + (f"Score {html.escape(str(score))} out of 10. " if score is not None else "")
+               + html.escape(r.get("why") or ""))
+        if r.get("flag"):
+            tip += f"<br>Flag: {html.escape(r['flag'])}."
+        url = f"https://pubmed.ncbi.nlm.nih.gov/{d['pmid']}/"
+        return (f'<a class="p {cls}" href="{url}" target="_blank" rel="noopener" '
+                f'data-detail="{html.escape(tip, quote=True)}">{html.escape(label)}</a>')
+
+    by = {k: [r for r in records if stance_of(r) == k] for k in STANCES}
+    thesis = sorted(by["thesis"], key=lambda r: -(score_of(r) or 0))
+    anti = sorted(by["antithesis"], key=lambda r: score_of(r) or 11)
+    left = "".join(panel(r, "t") for r in thesis) or '<div class="none">none</div>'
+    right = "".join(panel(r, "a") for r in anti) or '<div class="none">none</div>'
+    body = (f'<div class="cols"><div><h4>Papers for the gap, thesis ({len(thesis)})</h4>{left}</div>'
+            f'<div><h4>Papers against the gap, antithesis ({len(anti)})</h4>{right}</div></div>')
+    if by["neutral"]:
+        body += ('<div style="margin-top:8px">Neutral papers, with no bearing on the question '
+                 + "".join(panel(r, "n") for r in by["neutral"]) + "</div>")
+    body += ('<div id="detail"><span class="hint">Hover over a panel to see the title, the score and the reason. '
+             'Click a panel to open the paper on PubMed.</span></div>')
+    rows = max(len(thesis), len(anti), 1)
+    height = 30 + rows * 38 + (44 if by["neutral"] else 0) + 110
+    return (f"<html><head><style>{PANEL_CSS}</style></head><body>{body}<script>{PANEL_JS}</script></body></html>",
+            height)
+
+
+# ---------------------------------------------------------------- Q4 verification
 
 CITE_RE = re.compile(r"\[(PMID[^\]]*)\]")
 PMID_RE = re.compile(r"\d{7,8}")
 
 
+_SENT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\[(])")
+_LABEL_TOKENS = {"et", "al", "al.", "and", "&", ",", ";", "colleagues"}
+
+
+def _label_only(text):
+    """'Bai et al', 'Chang and Lee, 2020', 'the UKLS trial'? Only the first two:
+    a fragment that names authors and nothing else."""
+    words = [w for w in re.split(r"[\s,;]+", text.strip(" ,;:()")) if w]
+    rest = [w for w in words if w.lower() not in _LABEL_TOKENS and not re.fullmatch(r"\(?\d{4}\)?", w)]
+    return 0 < len(rest) <= 2
+
+
 def split_claims(review):
-    """Break the review into (claim_text, [pmids]) pairs. A claim is the text
-    on a line up to and including one citation bracket."""
+    """Break the review into (claim_text, [pmids]) pairs. A claim is the
+    sentence that ends with a citation bracket. Three repairs on top of that:
+    an uncited sentence between two citations belongs to the earlier one; a
+    bare author label cited on its own ("Bai et al [PMID n]") attaches its
+    PMID to the sentence it sits in; a label followed by uncited detail on the
+    same line is checked as label + detail."""
     claims = []
     for line in review.splitlines():
         line = line.strip().lstrip("-*• ").strip()
         if not line:
             continue
-        pos, carry = 0, ""
+        pos, carry, carry_pmids, first = 0, "", [], len(claims)
         for m in CITE_RE.finditer(line):
             text = line[pos:m.start()].replace("**", "").strip(" .;:")
             pmids = PMID_RE.findall(m.group(1))
             pos = m.end()
+            if not pmids:
+                continue
+            sentences = [s for s in _SENT_RE.split(text) if s.strip()] if text else []
+            if len(sentences) > 1 and len(claims) > first:
+                claims[-1][0] += " " + " ".join(s.strip(" .;:") for s in sentences[:-1])
+                text = sentences[-1].strip(" .;:")
             if carry:
-                text = (carry + " " + text).strip()
-                carry = ""
-            if not text or not pmids:
+                if _label_only(text) and len(claims) > first:
+                    # a list of labels: each PMID belongs to the sentence before the list
+                    claims[-1][1].extend(p for p in carry_pmids if p not in claims[-1][1])
+                    carry, carry_pmids = text, pmids
+                    continue
+                text, pmids = (carry + " " + text).strip(), carry_pmids + pmids
+                carry, carry_pmids = "", []
+            if not text:
+                if len(claims) > first:
+                    claims[-1][1].extend(p for p in pmids if p not in claims[-1][1])
                 continue
-            if len(text.split()) < 5:
-                # a bare name or label like "Chang et al., 2020" cited on its
-                # own: not a checkable claim, fold it into the next clause
-                carry = text
+            if _label_only(text) or len(text.split()) < 5:
+                carry, carry_pmids = text, pmids
                 continue
-            claims.append((text, pmids))
-        tail = line[pos:].replace("**", "").strip(" .;:")
-        if carry and tail and claims:
-            # label followed by uncited detail on the same line: check the
-            # detail against the label's citation
-            claims.append((carry + " " + tail, claims[-1][1]))
-    return claims
+            claims.append([text, list(pmids)])
+        tail = line[pos:].replace("**", "").strip(" .;:,")
+        if carry:
+            if tail:
+                claims.append([carry + " " + tail, carry_pmids])
+            elif len(claims) > first:
+                claims[-1][1].extend(p for p in carry_pmids if p not in claims[-1][1])
+            else:
+                claims.append([carry, carry_pmids])
+        elif tail and len(claims) > first and len(tail.split()) >= 5:
+            claims[-1][0] += " " + tail
+    return [(t, p) for t, p in claims]
 
 
 def _verify_one(client, text, pmid, d, system=VERIFY_INSTRUCTIONS, model=CHAT_MODEL):
     if d is None:
-        return {"claim": text, "pmid": pmid, "verdict": "unsupported",
+        return {"claim": text, "pmid": pmid, "verdict": "not supported",
                 "quote": "", "issue": "PMID is not in the corpus"}, Usage(model)
     user = (f"CLAIM: {text}\n\nABSTRACT (PMID {pmid}, {d['first_author']} {d['year']}):\n"
             f"TITLE: {d['title']}\n{d['abstract']}")
@@ -763,66 +906,51 @@ def verify_claims(review, documents, client=None, progress=None, workers=4,
     return rows, total
 
 
-# ---------------------------------------------------------------- Q6 gap assessment
-
-GAP_INSTRUCTIONS = """You judge whether a proposed research gap is still open, using ONLY the
-material given: the graded papers, the review with its verification table, and
-the search funnel (how many records PubMed matched, how many were fetched and
-screened).
-
-Rules:
-- "Not reported in this abstract" is not "not studied".
-- "Not retrieved" is not "no study exists": the corpus is only the fetched records.
-- A paper counts as a counterexample only if its OWN study does what the gap says
-  nobody has done. Name the closest ones even when they fall short, and say why.
-
-Return ONLY a JSON object:
-{"verdict": "contradicted" | "partly addressed" | "provisionally supported" | "insufficient evidence",
- "counterexamples": [{"pmid": "string", "why": "one sentence"}],   (up to 3, closest first)
- "uncertainty": "what would change the verdict, one or two sentences",
- "search_limits": "what the funnel numbers imply for this verdict, one or two sentences"}"""
-
-GAP_VERDICTS = ("contradicted", "partly addressed", "provisionally supported", "insufficient evidence")
-
+# ---------------------------------------------------------------- Q4 argument
 
 def funnel_line(funnel, n_docs=None, screened=None):
-    """One sentence of retrieval numbers for prompts and the report."""
-    if not funnel:
-        return "Search funnel: not recorded."
+    """One or two sentences of retrieval numbers for prompts and the report."""
+    if not funnel or funnel.get("total") is None:
+        return "The search funnel was not recorded."
+    s = f"PubMed matched {funnel['total']} records"
+    s += f" on {funnel['fetch_date']}." if funnel.get("fetch_date") else "."
     parts = []
-    if funnel.get("total") is not None:
-        parts.append(f"PubMed matched {funnel['total']} records")
     if funnel.get("fetched") is not None:
-        parts.append(f"{funnel['fetched']} fetched")
+        parts.append(f"{funnel['fetched']} were fetched")
     if n_docs is not None:
-        parts.append(f"{n_docs} with an abstract (the corpus)")
+        parts.append(f"{n_docs} have an abstract and form the corpus")
     if screened is not None:
-        parts.append(f"{screened} screened by the grader")
-    s = "Search funnel: " + ", ".join(parts) if parts else "Search funnel: not recorded"
-    if funnel.get("fetch_date"):
-        s += f"; fetched {funnel['fetch_date']}"
-    return s + "."
+        parts.append(f"{screened} were scored")
+    if parts:
+        s += " " + (", ".join(parts[:-1]) + (", and " if len(parts) > 1 else "") + parts[-1]).capitalize() + "."
+    return s
 
 
-def assess_gap(question, gap, records, review, rows, funnel_text, client=None,
-               system=GAP_INSTRUCTIONS, model=CHAT_MODEL):
-    """One call that weighs the proposed gap against the strongest papers.
-    Returns (verdict_dict_or_None, Usage, raw_text)."""
+def argue(question, gap, records, funnel_text, client=None, system=ARGUE_INSTRUCTIONS, model=CHAT_MODEL):
+    """One call that writes thesis, antithesis, synthesis and the verdict from
+    the thesis and antithesis records. Returns (dict_or_None, Usage, raw).
+    None when the reply is not a JSON object with the four keys."""
     client = client or anthropic_client()
-    table = "\n".join(f"{r['verdict']} | {r['pmid']} | {r['claim']}" for r in rows) or "(no claims checked)"
-    user = (f"{question_block(question, gap)}\n\n{funnel_text}\n\n"
-            f"GRADED PAPERS:\n{record_block(records, attach_full_high=True)}\n\n"
-            f"REVIEW:\n{review}\n\nVERIFICATION (verdict | pmid | claim):\n{table}")
-    text, usage = _chat(client, system, user, model=model)
+    system, filled = fill_prompt(system, question, gap)
+    user = ("" if filled else f"{question_block(question, gap)}\n\n") + f"{funnel_text}\n\nCONTEXT:\n{record_block(records)}"
+    text, usage = _chat(client, system, user, max_tokens=8192, model=model)
     out = None
     for attempt in range(2):
         try:
             out = _parse_json(text)
             break
         except json.JSONDecodeError:
-            if attempt == 0:
-                text, u2 = _chat(client, system, user, model=model)
+            if attempt == 0 and not usage.truncated:
+                text, u2 = _chat(client, system, user, max_tokens=8192, model=model)
                 _add(usage, u2)
-    if not isinstance(out, dict):
+    if not isinstance(out, dict) or not all(isinstance(out.get(k), str) for k in ("thesis", "antithesis", "synthesis")):
         return None, usage, text
+    out["verdict"] = str(out.get("verdict", "")).strip().lower()
+    if out["verdict"] not in VERDICTS:
+        out["verdict"] = "can't tell"
     return out, usage, text
+
+
+def argument_text(out):
+    """The three parts as one cited text, for verification and the report."""
+    return "\n\n".join(f"{k.upper()}\n{out.get(k, '')}" for k in ("thesis", "antithesis", "synthesis"))

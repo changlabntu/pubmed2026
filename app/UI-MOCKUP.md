@@ -1,96 +1,74 @@
-# Module 1 v3: UI mockup
+# Module 1 v4: UI mockup
 
-Text mockup of the Streamlit page, drawn before building; the word-limit
-slider was dropped (edit the number in the prompt) and the anchor dropdown
-moved to Q2. `[ ]` = button, `( )` = radio, `[x]` = toggle,
-`______` = text input, `▸` = collapsed expander, `▾` = expanded.
+Text sketch of the Streamlit page. `[ ]` = button, `( )` = radio,
+`______` = text input, `▸` = collapsed expander.
 
 ```
 ┌─ sidebar ───────────────────────────┐  ┌─ main ───────────────────────────────────────────────┐
-│ Pool                                │  │ Module 1 v3: build your own literature review          │
-│   knee_mri                          │  │                                                       │
-│                                     │  │ Q1. Build corpus                                      │
-│ Model                               │  │   (•) use a shipped pool  ( ) my own PubMed query     │
-│   (•) Haiku  $0.10 / $0.50 per M    │  │   Pool: [knee_mri ▾]                                  │
-│   ( ) Sonnet $3 / $15 per M (30x)   │  │   PubMed query ______________________________________ │
+│ Question set                        │  │ Module 1 v4: argue a research gap                     │
+│   [AI for lung cancer screening ▾]  │  │                                                       │
+│                                     │  │ 1. The claim                                          │
+│                                     │  │   Topic question (the territory) __________________   │
+│                                     │  │   The gap (the niche)      What would refute it       │
+│ Model          (teacher mode only)  │  │   ____________________     ____________________       │
+│   (•) Haiku  $0.10 / $0.50 per M    │  │                                                       │
+│   ( ) Sonnet (greyed out)           │  │ 2. Start from three papers                            │
+│                                     │  │   Corpus: (•) my own PubMed query ( ) shipped pool    │
+│ Cost cap       (teacher mode only)  │  │   PubMed query ______________________________________ │
+│   [=====|---------]  10 cents       │  │   Anchor + two companions: 41308576, 42229468, ...    │
 │                                     │  │   Max records  [====|-------]  200                    │
-│ Cost cap                            │  │   [x] exclude reviews, editorials, letters            │
-│   [=====|---------]  5 cents        │  │   [ Build corpus ]                                    │
-│                                     │  │   119 documents, 119 x 1536 vectors, from cache       │
-│ Spend this session                  │  │   Report: document count                              │
-│   Model calls   14                  │  │   My comment: _______________________________________ │
-│   Cost          $0.0071             │  │                                                       │
-│   ▸ Per step                        │  │ Q2. Grade three fixed papers                          │
-│                                     │  │   Research question ________________________________  │
-│ [ Download report (.md) ]           │  │   Anchor:    32055951 Chang 2020 ...                  │
-└─────────────────────────────────────┘  │   Companion: 40885690 ...   Companion: 33337584 ...   │
-                                         │   ▾ System prompt (edit me)            [ Reset ]      │
-                                         │   ┌─────────────────────────────────────────────────┐ │
-                                         │   │ You grade how well each abstract answers the    │ │
-                                         │   │ question. Return a JSON array, one object per   │ │
-                                         │   │ paper with keys: pmid, grade (HIGH|MEDIUM|LOW), │ │
-                                         │   │ cohort, n, headline_result, evidence_quote, why │ │
-                                         │   └─────────────────────────────────────────────────┘ │
-                                         │   [ Grade ]                                           │
-                                         │   ┌ pmid ─── grade ── cohort ── n ── headline ── ... ┐│
-                                         │   │ 32055951  MEDIUM  OAI       1.2k  AUC 0.808  ... ││
-                                         │   │ 40885690  LOW     ...                            ││
-                                         │   │ 33337584  MEDIUM  ...                            ││
-                                         │   └──────────────────────────────────────────────────┘│
-                                         │   ▸ 32055951 MEDIUM: why and evidence                 │
-                                         │   ▸ raw model reply                                   │
-                                         │   Report: which PMID is HIGH                          │
-                                         │   My comment: _______________________________________ │
+│ Spend          (teacher mode only)  │  │   Scoring prompt. EDIT THIS        [ Reset all ]      │
+│   Model calls   15                  │  │     BACKGROUND  ______________________________        │
+│   Cost          1.6 cents           │  │     WHAT TO DO  ______________________________        │
+│   ▸ Per move                        │  │     OUTPUT FORMAT ____________________________        │
+│                                     │  │   [ Fetch and score the three ]                       │
+│ [ Download report (.md) ]           │  │   PubMed matched 183 records; 178 form the corpus.    │
+└─────────────────────────────────────┘  │   ┌ Thesis: for the gap (1) ┐ ┌ Antithesis (0) ┐       │
+                                         │   │ Ledda et al. 2026 (anchor)│ │ none          │       │
+                                         │   └───────────────────────────┘ └───────────────┘       │
+                                         │   Neutral: Damiani et al. 2026  Zhang et al. 2021      │
+                                         │   (t-SNE map: grey dots, the three outlined + named)   │
+                                         │   ▸ The three records in full                         │
+                                         │   Comment: ___________________________________________ │
                                          │                                                       │
-                                         │ Q3. Find the anchor's neighbours                      │
-                                         │   k [==|----] 10                                      │
-                                         │   Embed: (•) title + abstract  ( ) title only         │
-                                                                                  │   [ Find similar ]                                    │
-                                         │   0.889  41234567 Walstra 2025 ...                    │
-                                         │   ...                                                 │
-                                         │   grades table for anchor + two nearest               │
-                                         │   Report: did neighbours grade higher than Q2         │
-                                         │   My comment: _______________________________________ │
+                                         │ 3. Gather evidence                                    │
+                                         │   [ Find evidence ]                                   │
+                                         │   ┌ Thesis: for the gap (6) ┐ ┌ Antithesis: against (4)┐│
+                                         │   │ Gebremichael et al. 2026│ │ Peeters et al. 2026   ││
+                                         │   │ Benzaquen et al. 2024   │ │ Jiang et al. 2026     ││
+                                         │   │ ...  (hover: title,     │ │ ...                   ││
+                                         │   │       score, why)       │ │                       ││
+                                         │   └─────────────────────────┘ └───────────────────────┘│
+                                         │   18 papers scored: the three plus 15 found ...        │
+                                         │   (map above recoloured: green / red / grey)           │
+                                         │   ▸ The two searches and every record in full         │
+                                         │   Comment: ___________________________________________ │
                                          │                                                       │
-                                         │ Q4. Search with the question                          │
-                                         │   Strategy: (•) embedding ( ) keyword ( ) hybrid      │
-                                         │   [ ] rewrite the question with Haiku first           │
-                                         │   k [===|---] 10                                      │
-                                                                                  │   [ Search ]                                          │
-                                         │   Anchor rank: 2                                      │
-                                         │   ┌ rank ─ sim ─── pmid ─── paper ─── grade ┐         │
-                                         │   │ 1  0.61  41308576  Ledda 2026   HIGH    │         │
-                                         │   │ ...                                     │         │
-                                         │   └─────────────────────────────────────────┘         │
-                                         │   Report: HIGH count, anchor rank                     │
-                                         │   My comment: _______________________________________ │
-                                         │                                                       │
-                                         │ Q5. Summarize and verify                              │
-                                         │   Include: [x] HIGH full abstract [x] MEDIUM [ ] LOW  │
-                                                                                  │   ▸ Synthesis prompt            [ Reset ]             │
-                                         │   ▸ Verifier prompt             [ Reset ]             │
-                                         │   [ Summarize and verify ]                            │
-                                         │   (review text with [PMID n] citations)               │
-                                         │   18 claim checks: 11 supported, 7 partial, 0 unsup.  │
+                                         │ 4. The argument                                       │
+                                         │   ▾ Argument prompt. EDIT THIS   (red-edged boxes)    │
+                                         │     BACKGROUND ______  WHAT TO DO ______  OUTPUT ____ │
+                                         │   ▸ Verifier prompt. EDIT THIS   (red-edged boxes)    │
+                                         │   [ Write the argument and verify ]                   │
+                                         │   Thesis. ...  [PMID n]                               │
+                                         │   Antithesis. ...  [PMID n]                           │
+                                         │   Synthesis. ...                                      │
+                                         │   Verdict: gap narrowed                               │
+                                         │   12 claim checks: 9 supported, 2 not supported, ...  │
                                          │   ┌ verdict ─ pmid ─── claim ─── issue ┐              │
-                                         │   │ partial  42383283  All HIGH ...    │              │
                                          │   └────────────────────────────────────┘              │
-                                         │   Report: claims checked, how many supported          │
-                                         │   My comment: _______________________________________ │
+                                         │   Comment: ___________________________________________ │
                                          └───────────────────────────────────────────────────────┘
 ```
 
 ## Behaviour notes
 
-- Every button first checks the ledger against the cost cap. Over the cap: the
-  button shows "Cap reached, raise the slider to continue" and does nothing.
-- Editing the research question, prompt, strategy, or k clears that step and
-  everything below it. Comments survive.
-- If a reply does not parse as JSON, the table is skipped and the raw reply
-  expander opens by default, with a yellow note: "Your prompt did not produce
-  JSON. Fix the prompt or read the answer as text."
-- The table shows whatever keys the model returned, in its order. Only `pmid`
-  and `grade` matter downstream. Missing `grade`: Q5 uses all papers and says so.
-- Download report writes one Markdown file: pool or query, every prompt as
-  edited, every setting, every table, the review, the verification rows, the
-  five comments, and the cost. That file is the homework submission.
+Every button first checks the ledger against the cost cap. Editing the
+claim, the PMIDs, the corpus source or a prompt clears that move and
+everything below it, while comments survive. A reply that does not parse is
+shown as raw text with a yellow note, and the note says when the reply was
+cut off at the output limit. The stance of a paper is computed from the
+model's relevance field and its score, and the table in the expander shows
+every key the model returned. The download button writes one Markdown file
+in the order of the argument: the claim, the starting papers, the evidence
+for, against and neutral, how the corpus was searched, the argument with its
+verdict, the verification, and an appendix.

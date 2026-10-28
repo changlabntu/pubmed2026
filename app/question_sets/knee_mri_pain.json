@@ -1,0 +1,13 @@
+{
+ "name": "AI for knee pain from MRI",
+ "note": "Same literature as the shipped knee_mri pool. Anchor: Chang 2020, Siamese network for knee pain from MR.",
+ "question": "Can AI detect or predict pain symptoms from knee MRI images?",
+ "gap": "No AI model has predicted a patient's reported knee pain, rather than structural damage, from MRI alone.",
+ "disproof": "A paper whose own study trains or tests a model on knee MRI with patient-reported pain as the target and reports its accuracy.",
+ "query": "(knee) AND (MRI OR \"magnetic resonance imaging\") AND (\"deep learning\" OR \"artificial intelligence\" OR \"machine learning\" OR radiomics) AND (pain OR symptom*)",
+ "pmids": [
+  "32055951",
+  "40885690",
+  "33337584"
+ ]
+}
